@@ -103,6 +103,60 @@
               },
               "attributes": {
                 "type": "object",
+                "required": [
+                  "course",
+                  "name",
+                  "disc",
+                  "phoneNumber",
+                  "bin",
+                  "comments",
+                  "dateFound",
+                  "color",
+                  "brand"
+                ],
+                "properties": {
+                  "course": { "type": "string" },
+                  "name": { "type": "string" },
+                  "disc": { "type": "string" },
+                  "phoneNumber": { "type": "string" },
+                  "bin": { "type": "string" },
+                  "comments": { "type": "string" },
+                  "dateFound": { "type": "string" },
+                  "color": { "type": "string" },
+                  "brand": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PostDiscResponse": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["id", "type", "attributes"],
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "type": {
+                "type": "string"
+              },
+              "attributes": {
+                "type": "object",
+                "required": [
+                  "course",
+                  "name",
+                  "disc",
+                  "phoneNumber",
+                  "bin",
+                  "comments",
+                  "dateFound",
+                  "color",
+                  "brand"
+                ],
                 "properties": {
                   "course": { "type": "string" },
                   "name": { "type": "string" },

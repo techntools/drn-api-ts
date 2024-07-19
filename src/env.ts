@@ -30,6 +30,9 @@ if (!process.env.DB_NAME) {
 }
 export const DB_NAME = process.env.DB_NAME;
 
+// default to true if no value in .env to be safe
+export const IS_PRODUCTION = process.env.IS_PRODUCTION || "T";
+
 if (errors.length > 0) {
   throw new Error(`Env vars missing: ${errors.join(", ")}`);
 }

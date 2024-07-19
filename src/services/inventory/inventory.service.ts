@@ -13,5 +13,19 @@ export const getInventory = async (req: Request, res: Response) => {
 
 export const postInventory = async (req: Request, res: Response) => {
   const body = req.body as PostInventoryBody;
-  res.status(501).send();
+  const dbResponse = await db.postInventory(body.data.attributes);
+  if ("errors" in dbResponse) {
+    res.status(500).send(dbResponse);
+    return;
+  }
+  if (!("insertId" in dbResponse.data)) {
+    console.error(dbResponse, "db error no insertId in dbResponse");
+  }
+  res.send(
+    "insertId" in dbResponse.data
+      ? { data: { id: dbResponse.data.insertId, ...body.data } }
+      : body
+  );
 };
+
+export const patchInventory = async (req: Request, res: Response) => {};
