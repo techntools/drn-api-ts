@@ -1,0 +1,124 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Disc Rescue Network TypeScript API Spec",
+    "description": "This is the API spec for this DRN API (TS). It is a valid contract as a",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://put-drn-api-url/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "inventory",
+      "description": "Everything related to disc inventory"
+    }
+  ],
+  "paths": {
+    "/inventory": {
+      "get": {
+        "tags": ["inventory"],
+        "summary": "Get disc inventory",
+        "description": "Get disc inventory",
+        "operationId": "getInventory",
+        "parameters": [
+          {
+            "name": "course",
+            "description": "Get inventory for specified courses",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Disc"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["inventory"],
+        "summary": "Add new disc to inventory",
+        "description": "Creates a new disc in the found discs",
+        "operationId": "postInventory",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostDisc"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostDisc"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Disc": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 13593
+          }
+        }
+      },
+      "PostDisc": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["type", "attributes"],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "attributes": {
+                "type": "object",
+                "properties": {
+                  "course": { "type": "string" },
+                  "name": { "type": "string" },
+                  "disc": { "type": "string" },
+                  "phoneNumber": { "type": "string" },
+                  "bin": { "type": "string" },
+                  "comments": { "type": "string" },
+                  "dateFound": { "type": "string" },
+                  "color": { "type": "string" },
+                  "brand": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

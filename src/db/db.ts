@@ -10,14 +10,28 @@ const db = mysql.createPool({
 
 export default {
   getInventory: async (
-    course: string
+    courses: string[]
   ): Promise<{ data: QueryResult } | { errors: object[] }> => {
     try {
       const [results, _fields] = await db.query(
-        "SELECT * FROM found_discs WHERE course = (?)",
-        [course]
+        `SELECT * FROM found_discs WHERE ${courses
+          .map(() => `course = (?)`)
+          .join(" OR ")}`,
+        [...courses]
       );
       return { data: results };
+    } catch (e) {
+      console.error(e, " error from database query");
+      return { errors: [{ code: "", message: "" }] };
+    }
+  },
+
+  postInventory: async (): Promise<
+    { data: QueryResult } | { errors: object[] }
+  > => {
+    try {
+      // TODO: implement post /inventory db query
+      return { data: "results" as any };
     } catch (e) {
       console.error(e, " error from database query");
       return { errors: [{ code: "", message: "" }] };
