@@ -3,12 +3,15 @@ import { APP_PORT, APP_CORS } from "./env";
 import cors from "cors";
 import {
   getInventory,
+  patchInventory,
   postInventory,
 } from "./services/inventory/inventory.service";
 import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
+import { getCourses } from "./services/courses/courses.service";
 
 const app = express();
+
 app.use(express.json());
 
 const apiSpec = openApiSpec as any; // TODO: use yaml by path (best) or import (last)
@@ -34,7 +37,7 @@ app.use(
   cors({
     allowedHeaders: ["Content-Type", "Authorization"],
     origin: APP_CORS,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "PATCH"],
   })
 );
 
@@ -44,6 +47,9 @@ app.get("/", (_req, res) => {
 
 app.get("/inventory", getInventory);
 app.post("/inventory", postInventory);
+app.patch("/inventory/:itemId", patchInventory);
+
+app.get("/courses", getCourses);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

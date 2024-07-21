@@ -42,7 +42,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Disc"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Disc"
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -70,7 +78,76 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostDisc"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Course"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/inventory/{itemId}": {
+      "patch": {
+        "tags": ["inventory"],
+        "summary": "Update disc attributes",
+        "description": "Pass at least one attribute to update for a disc in inventory",
+        "operationId": "patchInventory",
+        "parameters": [
+          {
+            "name": "itemId",
+            "required": true,
+            "description": "Inventory item id to update",
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchDisc"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchDiscResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "tags": ["courses"],
+        "summary": "Get courses",
+        "description": "Retrieve a list of courses and filter by params",
+        "operationId": "getCourses",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Course"
                 }
               }
             }
@@ -83,26 +160,127 @@
     "schemas": {
       "Disc": {
         "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "attributes"],
         "properties": {
           "id": {
             "type": "number",
             "example": 13593
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "course",
+              "name",
+              "disc",
+              "phoneNumber",
+              "bin",
+              "dateFound",
+              "dateTexted",
+              "dateClaimed",
+              "status",
+              "comments",
+              "color",
+              "claimBy",
+              "brand",
+              "dateSold",
+              "reminderTextSent",
+              "frontImage",
+              "backImage"
+            ],
+            "properties": {
+              "course": {
+                "type": "string",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "nullable": true
+              },
+              "disc": {
+                "type": "string",
+                "nullable": true
+              },
+              "phoneNumber": {
+                "type": "string",
+                "nullable": true
+              },
+              "bin": {
+                "type": "string",
+                "nullable": true
+              },
+              "dateFound": {
+                "type": "string",
+                "nullable": true
+              },
+              "dateTexted": {
+                "type": "string",
+                "nullable": true
+              },
+              "dateClaimed": {
+                "type": "string",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "nullable": true
+              },
+              "comments": {
+                "type": "string",
+                "nullable": true
+              },
+              "color": {
+                "type": "string",
+                "nullable": true
+              },
+              "claimBy": {
+                "type": "string",
+                "nullable": true
+              },
+              "brand": {
+                "type": "string",
+                "nullable": true
+              },
+              "dateSold": {
+                "type": "string",
+                "nullable": true
+              },
+              "reminderTextSent": {
+                "type": "number",
+                "nullable": true
+              },
+              "frontImage": {
+                "type": "string",
+                "nullable": true
+              },
+              "backImage": {
+                "type": "string",
+                "nullable": true
+              }
+            }
           }
         }
       },
       "PostDisc": {
         "type": "object",
         "required": ["data"],
+        "additionalProperties": false,
         "properties": {
           "data": {
             "type": "object",
             "required": ["type", "attributes"],
+            "additionalProperties": false,
             "properties": {
               "type": {
                 "type": "string"
               },
               "attributes": {
                 "type": "object",
+                "additionalProperties": false,
                 "required": [
                   "course",
                   "name",
@@ -133,10 +311,12 @@
       "PostDiscResponse": {
         "type": "object",
         "required": ["data"],
+        "additionalProperties": false,
         "properties": {
           "data": {
             "type": "object",
             "required": ["id", "type", "attributes"],
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "type": "number"
@@ -146,6 +326,7 @@
               },
               "attributes": {
                 "type": "object",
+                "additionalProperties": false,
                 "required": [
                   "course",
                   "name",
@@ -170,6 +351,109 @@
                 }
               }
             }
+          }
+        }
+      },
+      "PatchDisc": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "type": "object",
+            "required": ["type", "attributes"],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "attributes": {
+                "type": "object",
+                "additionalProperties": false,
+                "anyOf": [
+                  { "required": ["course"] },
+                  { "required": ["name"] },
+                  { "required": ["disc"] },
+                  { "required": ["phoneNumber"] },
+                  { "required": ["bin"] },
+                  { "required": ["comments"] },
+                  { "required": ["dateFound"] },
+                  { "required": ["color"] },
+                  { "required": ["brand"] }
+                ],
+                "properties": {
+                  "course": { "type": "string" },
+                  "name": { "type": "string" },
+                  "disc": { "type": "string" },
+                  "phoneNumber": { "type": "string" },
+                  "bin": { "type": "string" },
+                  "comments": { "type": "string" },
+                  "dateFound": { "type": "string" },
+                  "color": { "type": "string" },
+                  "brand": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "PatchDiscResponse": {
+        "type": "object",
+        "required": ["data"],
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["id", "type", "attributes"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "type": {
+                "type": "string"
+              },
+              "attributes": {
+                "type": "object",
+                "additionalProperties": false,
+                "anyOf": [
+                  { "required": ["course"] },
+                  { "required": ["name"] },
+                  { "required": ["disc"] },
+                  { "required": ["phoneNumber"] },
+                  { "required": ["bin"] },
+                  { "required": ["comments"] },
+                  { "required": ["dateFound"] },
+                  { "required": ["color"] },
+                  { "required": ["brand"] }
+                ],
+                "properties": {
+                  "course": { "type": "string" },
+                  "name": { "type": "string" },
+                  "disc": { "type": "string" },
+                  "phoneNumber": { "type": "string" },
+                  "bin": { "type": "string" },
+                  "comments": { "type": "string" },
+                  "dateFound": { "type": "string" },
+                  "color": { "type": "string" },
+                  "brand": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 13593
+          },
+          "type": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object"
           }
         }
       }
