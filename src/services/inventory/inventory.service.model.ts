@@ -2,6 +2,7 @@ export const INVENTORY_TYPE = "inventory";
 
 export type GetInventoryQuery = {
   course?: string[];
+  brand?: string[];
 };
 
 // TODO: validate

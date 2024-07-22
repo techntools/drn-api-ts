@@ -26,7 +26,18 @@
         "parameters": [
           {
             "name": "course",
-            "description": "Get inventory for specified courses",
+            "description": "Filter by one or more courses",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "brand",
+            "description": "Add filter by one or more brands",
             "in": "query",
             "schema": {
               "type": "array",
@@ -83,7 +94,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Course"
+                        "$ref": "#/components/schemas/PostDiscResponse"
                       }
                     }
                   }
@@ -141,13 +152,80 @@
         "summary": "Get courses",
         "description": "Retrieve a list of courses and filter by params",
         "operationId": "getCourses",
+        "parameters": [
+          {
+            "name": "activeForLostAndFound",
+            "description": "Filter by one or more activeForLostAndFound",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "orgCode",
+            "description": "Add filter by one or more organization",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Course"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Course"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai/image/text": {
+      "post": {
+        "tags": ["ai"],
+        "summary": "Detect text in image",
+        "description": "POST base 64 to detect text",
+        "operationId": "getImageText",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostImageForGetText"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -444,6 +522,8 @@
       },
       "Course": {
         "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "attributes"],
         "properties": {
           "id": {
             "type": "number",
@@ -453,7 +533,51 @@
             "type": "string"
           },
           "attributes": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "orgCode",
+              "courseName",
+              "state",
+              "city",
+              "shortCode",
+              "createdAt",
+              "updatedAt",
+              "activeForLostAndFound",
+              "shortLink",
+              "link",
+              "udiscLeagueURL"
+            ],
+            "properties": {
+              "orgCode": { "type": "string", "nullable": true },
+              "courseName": { "type": "string", "nullable": true },
+              "state": { "type": "string", "nullable": true },
+              "city": { "type": "string", "nullable": true },
+              "shortCode": { "type": "string", "nullable": true },
+              "createdAt": { "type": "string", "nullable": true },
+              "updatedAt": { "type": "string", "nullable": true },
+              "activeForLostAndFound": { "type": "number", "nullable": true },
+              "shortLink": { "type": "string", "nullable": true },
+              "link": { "type": "string", "nullable": true },
+              "udiscLeagueURL": { "type": "string", "nullable": true }
+            }
+          }
+        }
+      },
+      "PostImageForGetText": {
+        "type": "object",
+        "required": ["data"],
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["image"],
+            "additionalProperties": false,
+            "properties": {
+              "image": {
+                "type": "string"
+              }
+            }
           }
         }
       }

@@ -9,7 +9,7 @@ import db from "../../db/db";
 
 export const getInventory = async (req: Request, res: Response) => {
   const query = req.query as GetInventoryQuery;
-  const dbResponse = await db.getInventory(query.course);
+  const dbResponse = await db.getInventory(query.course, query.brand);
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getInventory)");
     res.status(500).send(dbResponse);
@@ -61,16 +61,12 @@ export const postInventory = async (req: Request, res: Response) => {
     res.status(500).send({ errors: [{ code: "", message: "" }] });
     return;
   }
-  console.log("sending", {
-    data: { id: dbResponse.data.insertId, ...body.data },
-  });
   res.send({
     data: { id: dbResponse.data.insertId, ...body.data, type: INVENTORY_TYPE },
   });
 };
 
 export const patchInventory = async (req: Request, res: Response) => {
-  console.log("patch req", req);
   const body = req.body as PatchInventoryBody;
   const { itemId } = req.params;
   if (typeof itemId !== "number") {

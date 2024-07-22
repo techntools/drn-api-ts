@@ -16,6 +16,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@google-cloud/vision": "^4.3.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-openapi-validator": "^5.2.0",

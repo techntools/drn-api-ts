@@ -9,6 +9,7 @@ import {
 import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
 import { getCourses } from "./services/courses/courses.service";
+import { postImageText } from "./services/ai/ai.service";
 
 const app = express();
 
@@ -50,6 +51,8 @@ app.post("/inventory", postInventory);
 app.patch("/inventory/:itemId", patchInventory);
 
 app.get("/courses", getCourses);
+
+app.post("/ai/image/text", postImageText);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);
