@@ -1,13 +1,10 @@
-import mysql from "mysql2/promise";
+import { QueryResult } from "mysql2";
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, IS_PRODUCTION } from "../env";
-import {
-  COURSES_TABLE,
-  DbResponse,
-  INVENTORY_TABLE,
-  performSelectWhere,
-} from "./db.model";
+import { COURSES_TABLE, DbResponse, INVENTORY_TABLE } from "./db.model";
+import zzz, { and } from "zzzql";
+import { ZzzResponse } from "zzzql/src/zzz.model";
 
-const db = mysql.createPool({
+zzz.init({
   host: DB_HOST,
   user: DB_USER,
   password: DB_PASSWORD,
@@ -19,10 +16,15 @@ const getInventory = async (
   brands: string[] | undefined
 ): Promise<DbResponse> => {
   try {
-    const results = await performSelectWhere(db, INVENTORY_TABLE, [
-      { key: "course", values: courses, innerJoin: "OR" },
-      { key: "brand", values: brands, innerJoin: "OR" },
-    ]);
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      select: {
+        table: INVENTORY_TABLE,
+        where: [{ course: { eq: courses } }, and, { brand: { eq: brands } }],
+      },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
     return { data: results };
   } catch (e) {
     console.error(e, " error from database query");
@@ -45,24 +47,12 @@ const postInventory = async (attributes: {
     throw Error(`IS_PRODUCTION && attributes.course !== "DRN Admins"`);
   }
   try {
-    const [results, _fields] = await db.query(
-      `
-        INSERT INTO ${INVENTORY_TABLE}
-        (course, name, disc, phoneNumber, bin, comments, dateFound, color, brand)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      [
-        attributes.course,
-        attributes.name,
-        attributes.disc,
-        attributes.phoneNumber,
-        attributes.bin,
-        attributes.comments,
-        attributes.dateFound,
-        attributes.color,
-        attributes.brand,
-      ]
-    );
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      insert: { table: INVENTORY_TABLE, values: attributes },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
     return { data: results };
   } catch (e) {
     console.error(e, " error from database query");
@@ -92,18 +82,28 @@ const patchInventory = async (
     throw Error(`IS_PRODUCTION && attributes.course !== "DRN Admins"`);
   }
   try {
-    await db.query("START TRANSACTION");
-    await db.query(`SELECT 1 FROM ${INVENTORY_TABLE} WHERE id = ? FOR UPDATE`, [
-      id,
-    ]);
-    const setClause = Object.keys(attributes)
-      .map((key) => `${key} = ?`)
-      .join(", ");
-    const [results, _fields] = await db.query(
-      `UPDATE ${INVENTORY_TABLE} SET ${setClause} WHERE id = ?`,
-      [...Object.values(attributes), id]
-    );
-    await db.query("COMMIT");
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      transaction: [
+        {
+          select: {
+            table: INVENTORY_TABLE,
+            fields: "1",
+            where: [{ id: { eq: id } }],
+            forUpdate: true,
+          },
+        },
+        {
+          update: {
+            table: INVENTORY_TABLE,
+            set: attributes,
+            where: [{ id: { eq: id } }],
+          },
+        },
+      ],
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
     return { data: results };
   } catch (e) {
     console.error(e, " error from database query");
@@ -116,14 +116,19 @@ const getCourses = async (
   activeForLostAndFound: number[] | undefined
 ): Promise<DbResponse> => {
   try {
-    const results = await performSelectWhere(db, COURSES_TABLE, [
-      { key: "orgCode", values: orgCode, innerJoin: "OR" },
-      {
-        key: "activeForLostAndFound",
-        values: activeForLostAndFound,
-        innerJoin: "OR",
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      select: {
+        table: COURSES_TABLE,
+        where: [
+          { orgCode: { eq: orgCode } },
+          and,
+          { activeForLostAndFound: { eq: activeForLostAndFound } },
+        ],
       },
-    ]);
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
     return { data: results };
   } catch (e) {
     console.error(e, " error from database query");

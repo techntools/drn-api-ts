@@ -44,7 +44,6 @@ export const getInventory = async (req: Request, res: Response) => {
   const response = {
     data: mappedData,
   };
-  response.data.forEach((e) => console.log(e));
   res.send(response);
 };
 

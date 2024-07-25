@@ -89,15 +89,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/PostDiscResponse"
-                      }
-                    }
-                  }
+                  "$ref": "#/components/schemas/PostDiscResponse"
                 }
               }
             }
