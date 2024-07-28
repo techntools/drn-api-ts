@@ -45,6 +45,81 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "disc",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "phoneNumber",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "bin",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "dateFound",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "dateTexted",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "dateClaimed",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "comments",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "color",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "claimBy",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "dateSold",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "reminderTextSent",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "frontImage",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "backImage",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
           }
         ],
         "responses": {
@@ -166,6 +241,51 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "name": "courseName",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "shortCode",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "createdAt",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "updatedAt",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "shortLink",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "link",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "udiscLeagueURL",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
           }
         ],
         "responses": {
@@ -190,7 +310,7 @@
         }
       }
     },
-    "/ai/image/text": {
+    "/ai/image": {
       "post": {
         "tags": ["ai"],
         "summary": "Detect text in image",
@@ -213,9 +333,35 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "additionalProperties": false,
+                  "required": ["data"],
                   "properties": {
                     "data": {
-                      "type": "string"
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["text", "colors"],
+                      "properties": {
+                        "colors": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "text": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": ["confidence", "words"],
+                          "properties": {
+                            "confidence": { "type": "number" },
+                            "words": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/VisionResponseWords"
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -363,15 +509,74 @@
                   "brand"
                 ],
                 "properties": {
-                  "course": { "type": "string" },
-                  "name": { "type": "string" },
-                  "disc": { "type": "string" },
-                  "phoneNumber": { "type": "string" },
-                  "bin": { "type": "string" },
-                  "comments": { "type": "string" },
-                  "dateFound": { "type": "string" },
-                  "color": { "type": "string" },
-                  "brand": { "type": "string" }
+                  "course": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "disc": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "bin": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateFound": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateTexted": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateClaimed": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "comments": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "color": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "claimBy": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "brand": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateSold": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "reminderTextSent": {
+                    "type": "number",
+                    "nullable": true
+                  },
+                  "frontImage": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "backImage": {
+                    "type": "string",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -409,15 +614,74 @@
                   "brand"
                 ],
                 "properties": {
-                  "course": { "type": "string" },
-                  "name": { "type": "string" },
-                  "disc": { "type": "string" },
-                  "phoneNumber": { "type": "string" },
-                  "bin": { "type": "string" },
-                  "comments": { "type": "string" },
-                  "dateFound": { "type": "string" },
-                  "color": { "type": "string" },
-                  "brand": { "type": "string" }
+                  "course": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "disc": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "bin": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateFound": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateTexted": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateClaimed": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "comments": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "color": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "claimBy": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "brand": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateSold": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "reminderTextSent": {
+                    "type": "number",
+                    "nullable": true
+                  },
+                  "frontImage": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "backImage": {
+                    "type": "string",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -445,21 +709,88 @@
                   { "required": ["disc"] },
                   { "required": ["phoneNumber"] },
                   { "required": ["bin"] },
-                  { "required": ["comments"] },
                   { "required": ["dateFound"] },
+                  { "required": ["dateTexted"] },
+                  { "required": ["dateClaimed"] },
+                  { "required": ["status"] },
+                  { "required": ["comments"] },
                   { "required": ["color"] },
-                  { "required": ["brand"] }
+                  { "required": ["claimBy"] },
+                  { "required": ["brand"] },
+                  { "required": ["dateSold"] },
+                  { "required": ["reminderTextSent"] },
+                  { "required": ["frontImage"] },
+                  { "required": ["backImage"] }
                 ],
                 "properties": {
-                  "course": { "type": "string" },
-                  "name": { "type": "string" },
-                  "disc": { "type": "string" },
-                  "phoneNumber": { "type": "string" },
-                  "bin": { "type": "string" },
-                  "comments": { "type": "string" },
-                  "dateFound": { "type": "string" },
-                  "color": { "type": "string" },
-                  "brand": { "type": "string" }
+                  "course": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "disc": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "bin": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateFound": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateTexted": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateClaimed": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "comments": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "color": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "claimBy": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "brand": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateSold": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "reminderTextSent": {
+                    "type": "number",
+                    "nullable": true
+                  },
+                  "frontImage": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "backImage": {
+                    "type": "string",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -491,21 +822,88 @@
                   { "required": ["disc"] },
                   { "required": ["phoneNumber"] },
                   { "required": ["bin"] },
-                  { "required": ["comments"] },
                   { "required": ["dateFound"] },
+                  { "required": ["dateTexted"] },
+                  { "required": ["dateClaimed"] },
+                  { "required": ["status"] },
+                  { "required": ["comments"] },
                   { "required": ["color"] },
-                  { "required": ["brand"] }
+                  { "required": ["claimBy"] },
+                  { "required": ["brand"] },
+                  { "required": ["dateSold"] },
+                  { "required": ["reminderTextSent"] },
+                  { "required": ["frontImage"] },
+                  { "required": ["backImage"] }
                 ],
                 "properties": {
-                  "course": { "type": "string" },
-                  "name": { "type": "string" },
-                  "disc": { "type": "string" },
-                  "phoneNumber": { "type": "string" },
-                  "bin": { "type": "string" },
-                  "comments": { "type": "string" },
-                  "dateFound": { "type": "string" },
-                  "color": { "type": "string" },
-                  "brand": { "type": "string" }
+                  "course": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "disc": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "bin": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateFound": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateTexted": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateClaimed": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "comments": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "color": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "claimBy": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "brand": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "dateSold": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "reminderTextSent": {
+                    "type": "number",
+                    "nullable": true
+                  },
+                  "frontImage": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "backImage": {
+                    "type": "string",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -570,6 +968,19 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "VisionResponseWords": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["confidence", "word"],
+        "properties": {
+          "confidence": {
+            "type": "number"
+          },
+          "word": {
+            "type": "string"
           }
         }
       }

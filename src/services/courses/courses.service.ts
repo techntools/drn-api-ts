@@ -6,7 +6,16 @@ export const getCourses = async (req: Request, res: Response) => {
   const query = req.query as GetCoursesQuery;
   const dbResponse = await db.getCourses(
     query.orgCode,
-    query.activeForLostAndFound
+    query.activeForLostAndFound,
+    query.courseName,
+    query.state,
+    query.city,
+    query.shortCode,
+    query.createdAt,
+    query.updatedAt,
+    query.shortLink,
+    query.link,
+    query.udiscLeagueURL
   );
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getCourses)");

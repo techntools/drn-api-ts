@@ -13,7 +13,7 @@ import { postImageText } from "./services/ai/ai.service";
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 
 const apiSpec = openApiSpec as any; // TODO: use yaml by path (best) or import (last)
 app.use(
@@ -52,7 +52,7 @@ app.patch("/inventory/:itemId", patchInventory);
 
 app.get("/courses", getCourses);
 
-app.post("/ai/image/text", postImageText);
+app.post("/ai/image", postImageText);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

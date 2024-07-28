@@ -9,7 +9,25 @@ import db from "../../db/db";
 
 export const getInventory = async (req: Request, res: Response) => {
   const query = req.query as GetInventoryQuery;
-  const dbResponse = await db.getInventory(query.course, query.brand);
+  const dbResponse = await db.getInventory(
+    query.course,
+    query.name,
+    query.disc,
+    query.phoneNumber,
+    query.bin,
+    query.dateFound,
+    query.dateTexted,
+    query.dateClaimed,
+    query.status,
+    query.comments,
+    query.color,
+    query.claimBy,
+    query.brand,
+    query.dateSold,
+    query.reminderTextSent,
+    query.frontImage,
+    query.backImage
+  );
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getInventory)");
     res.status(500).send(dbResponse);

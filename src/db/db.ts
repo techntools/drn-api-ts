@@ -1,8 +1,7 @@
 import { QueryResult } from "mysql2";
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, IS_PRODUCTION } from "../env";
 import { COURSES_TABLE, DbResponse, INVENTORY_TABLE } from "./db.model";
-import zzz, { and } from "zzzql";
-import { ZzzResponse } from "zzzql/src/zzz.model";
+import zzz, { and, ZzzResponse } from "zzzql";
 
 zzz.init({
   host: DB_HOST,
@@ -13,13 +12,62 @@ zzz.init({
 
 const getInventory = async (
   courses: string[] | undefined,
-  brands: string[] | undefined
+  names: string[] | undefined,
+  discs: string[] | undefined,
+  phoneNumbers: string[] | undefined,
+  bins: string[] | undefined,
+  dateFounds: string[] | undefined,
+  dateTexteds: string[] | undefined,
+  dateClaimeds: string[] | undefined,
+  statuss: string[] | undefined,
+  commentss: string[] | undefined,
+  colors: string[] | undefined,
+  claimBys: string[] | undefined,
+  brands: string[] | undefined,
+  dateSolds: string[] | undefined,
+  reminderTextSents: number[] | undefined,
+  frontImages: string[] | undefined,
+  backImages: string[] | undefined
 ): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       select: {
         table: INVENTORY_TABLE,
-        where: [{ course: { eq: courses } }, and, { brand: { eq: brands } }],
+        where: [
+          { course: { eq: courses } },
+          and,
+          { disc: { eq: discs } },
+          and,
+          { phoneNumber: { eq: phoneNumbers } },
+          and,
+          { bin: { eq: bins } },
+          and,
+          { name: { eq: names } },
+          and,
+          { brand: { eq: brands } },
+          and,
+          { dateFound: { eq: dateFounds } },
+          and,
+          { dateTexted: { eq: dateTexteds } },
+          and,
+          { dateClaimed: { eq: dateClaimeds } },
+          and,
+          { status: { eq: statuss } },
+          and,
+          { comments: { eq: commentss } },
+          and,
+          { color: { eq: colors } },
+          and,
+          { claimBy: { eq: claimBys } },
+          and,
+          { dateSold: { eq: dateSolds } },
+          and,
+          { reminderTextSent: { eq: reminderTextSents } },
+          and,
+          { frontImage: { eq: frontImages } },
+          and,
+          { backImage: { eq: backImages } },
+        ],
       },
     });
     if ("error" in results) {
@@ -113,7 +161,16 @@ const patchInventory = async (
 
 const getCourses = async (
   orgCode: string[] | undefined,
-  activeForLostAndFound: number[] | undefined
+  activeForLostAndFound: number[] | undefined,
+  courseName: string[] | undefined,
+  state: string[] | undefined,
+  city: string[] | undefined,
+  shortCode: string[] | undefined,
+  createdAt: string[] | undefined,
+  updatedAt: string[] | undefined,
+  shortLink: string[] | undefined,
+  link: string[] | undefined,
+  udiscLeagueURL: string[] | undefined
 ): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
@@ -123,6 +180,24 @@ const getCourses = async (
           { orgCode: { eq: orgCode } },
           and,
           { activeForLostAndFound: { eq: activeForLostAndFound } },
+          and,
+          { courseName: { eq: courseName } },
+          and,
+          { state: { eq: state } },
+          and,
+          { city: { eq: city } },
+          and,
+          { shortCode: { eq: shortCode } },
+          and,
+          { createdAt: { eq: createdAt } },
+          and,
+          { updatedAt: { eq: updatedAt } },
+          and,
+          { shortLink: { eq: shortLink } },
+          and,
+          { link: { eq: link } },
+          and,
+          { udiscLeagueURL: { eq: udiscLeagueURL } },
         ],
       },
     });
