@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Disc Rescue Network TypeScript API Spec",
-    "description": "This is the API spec for this DRN API (TS). It is a valid contract as a",
+    "description": "**README:** Query parameters that are arrays expect you to send the parameters like `?parameter=test&parameter=abc` which results in an `OR` condition i.e. `SELECT * WHERE parameter = \"test\" OR parameter = \"abc\"`. Additionally, if other parameters are included those are treated as `AND` conditions, i.e. `?anotherParam=0&parameter=test&parameter=abc` would result in a `SELECT * WHERE (anotherParam = 0) AND (parameter = \"test\" OR parameter = \"abc\")`",
     "version": "1.0.0"
   },
   "servers": [
