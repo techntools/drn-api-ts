@@ -33,6 +33,16 @@ export const DB_NAME = process.env.DB_NAME;
 // default to true if no value in .env to be safe
 export const IS_PRODUCTION = process.env.IS_PRODUCTION || "T";
 
+if (!process.env.AUTH_ISSUER) {
+  errors.push("AUTH_ISSUER");
+}
+export const AUTH_ISSUER = process.env.AUTH_ISSUER;
+
+if (!process.env.AUTH_AUDIENCE) {
+  errors.push("AUTH_AUDIENCE");
+}
+export const AUTH_AUDIENCE = process.env.AUTH_AUDIENCE;
+
 if (errors.length > 0) {
   throw new Error(`Env vars missing: ${errors.join(", ")}`);
 }

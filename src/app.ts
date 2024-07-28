@@ -1,5 +1,5 @@
 import express from "express";
-import { APP_PORT, APP_CORS } from "./env";
+import { APP_PORT, APP_CORS, AUTH_ISSUER, AUTH_AUDIENCE } from "./env";
 import cors from "cors";
 import {
   getInventory,
@@ -10,6 +10,7 @@ import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
 import { getCourses } from "./services/courses/courses.service";
 import { postImageText } from "./services/ai/ai.service";
+const { auth } = require("express-oauth2-jwt-bearer");
 
 const app = express();
 
@@ -33,6 +34,13 @@ app.use((err, req, res, next) => {
     errors: err.errors,
   });
 });
+
+app.use(
+  auth({
+    issuerBaseURL: AUTH_ISSUER,
+    audience: AUTH_AUDIENCE,
+  })
+);
 
 app.use(
   cors({
