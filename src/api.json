@@ -344,7 +344,7 @@
                         "colors": {
                           "type": "array",
                           "items": {
-                            "type": "object"
+                            "$ref": "#/components/schemas/VisionResponseColors"
                           }
                         },
                         "text": {
@@ -982,6 +982,36 @@
           "word": {
             "type": "string"
           }
+        }
+      },
+      "VisionResponseColors": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["color", "name", "score", "pixelFraction"],
+        "properties": {
+          "color": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["red", "green", "blue", "alpha"],
+            "properties": {
+              "red": {
+                "type": "number"
+              },
+              "green": {
+                "type": "number"
+              },
+              "blue": {
+                "type": "number"
+              },
+              "alpha": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "name": { "type": "string" },
+          "score": { "type": "number" },
+          "pixelFraction": { "type": "number" }
         }
       }
     }
