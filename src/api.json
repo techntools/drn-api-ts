@@ -69,17 +69,26 @@
           {
             "name": "dateFound",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
           },
           {
             "name": "dateTexted",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
           },
           {
             "name": "dateClaimed",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
           },
           {
             "name": "status",
@@ -104,7 +113,10 @@
           {
             "name": "dateSold",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
           },
           {
             "name": "reminderTextSent",
@@ -525,14 +537,17 @@
               },
               "dateFound": {
                 "type": "string",
+                "format": "date",
                 "nullable": true
               },
               "dateTexted": {
                 "type": "string",
+                "format": "date",
                 "nullable": true
               },
               "dateClaimed": {
                 "type": "string",
+                "format": "date",
                 "nullable": true
               },
               "status": {
@@ -557,6 +572,7 @@
               },
               "dateSold": {
                 "type": "string",
+                "format": "date",
                 "nullable": true
               },
               "reminderTextSent": {
@@ -627,14 +643,17 @@
                   },
                   "dateFound": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateTexted": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateClaimed": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "status": {
@@ -655,6 +674,7 @@
                   },
                   "dateSold": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "reminderTextSent": {
@@ -727,14 +747,17 @@
                   },
                   "dateFound": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateTexted": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateClaimed": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "status": {
@@ -755,6 +778,7 @@
                   },
                   "dateSold": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "reminderTextSent": {
@@ -831,14 +855,17 @@
                   },
                   "dateFound": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateTexted": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateClaimed": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "status": {
@@ -858,6 +885,7 @@
                   },
                   "dateSold": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "reminderTextSent": {
@@ -939,14 +967,17 @@
                   },
                   "dateFound": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateTexted": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "dateClaimed": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "status": {
@@ -967,6 +998,7 @@
                   },
                   "dateSold": {
                     "type": "string",
+                    "format": "date",
                     "nullable": true
                   },
                   "reminderTextSent": {

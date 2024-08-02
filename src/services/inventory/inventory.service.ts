@@ -47,7 +47,8 @@ export const getInventory = async (req: Request, res: Response) => {
     const serial = {} as typeof d;
     Object.entries(d).forEach(
       ([key, value]) =>
-        (serial[key] = value instanceof Date ? value.toISOString() : value)
+        (serial[key] =
+          value instanceof Date ? value.toISOString().split("T")[0] : value)
     );
     return serial;
   });
