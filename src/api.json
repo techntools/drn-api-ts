@@ -478,7 +478,7 @@
       "ZeroOrOneNullable": {
         "nullable": true,
         "type": "number",
-        "enum": [0, 1]
+        "enum": [0, 1, null]
       },
       "Disc": {
         "type": "object",
