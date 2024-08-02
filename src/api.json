@@ -93,7 +93,10 @@
           {
             "name": "status",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/Statuses" }
+            }
           },
           {
             "name": "comments",
@@ -554,8 +557,7 @@
                 "nullable": true
               },
               "status": {
-                "type": "string",
-                "nullable": true
+                "$ref": "#/components/schemas/Statuses"
               },
               "comments": {
                 "type": "string",
@@ -661,8 +663,7 @@
                     "nullable": true
                   },
                   "status": {
-                    "type": "string",
-                    "nullable": true
+                    "$ref": "#/components/schemas/Statuses"
                   },
                   "comments": {
                     "type": "string",
@@ -765,8 +766,7 @@
                     "nullable": true
                   },
                   "status": {
-                    "type": "string",
-                    "nullable": true
+                    "$ref": "#/components/schemas/Statuses"
                   },
                   "comments": {
                     "type": "string",
@@ -985,8 +985,7 @@
                     "nullable": true
                   },
                   "status": {
-                    "type": "string",
-                    "nullable": true
+                    "$ref": "#/components/schemas/Statuses"
                   },
                   "comments": {
                     "type": "string",
