@@ -108,7 +108,10 @@
           {
             "name": "claimBy",
             "in": "query",
-            "schema": { "type": "array", "items": { "type": "string" } }
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
           },
           {
             "name": "dateSold",
@@ -564,6 +567,7 @@
               },
               "claimBy": {
                 "type": "string",
+                "format": "date",
                 "nullable": true
               },
               "brand": {
