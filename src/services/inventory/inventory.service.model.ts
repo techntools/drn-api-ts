@@ -15,9 +15,10 @@ export type GetInventoryQuery = {
   claimBy?: string[];
   brand?: string[];
   dateSold?: string[];
-  reminderTextSent?: number[];
-  frontImage?: string[];
-  backImage?: string[];
+  reminderTextSent?: (0 | 1)[];
+  topImage?: string[];
+  bottomImage?: string[];
+  deleted?: (0 | 1)[];
 };
 
 // TODO: validate
@@ -51,6 +52,8 @@ export type PatchInventoryBody = {
       dateFound?: string;
       color?: string;
       brand?: string;
+      reminderTextSent?: 0 | 1;
+      deleted?: 0 | 1;
     };
   };
 };

@@ -1,6 +1,11 @@
 import { QueryResult } from "mysql2";
 import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, IS_PRODUCTION } from "../env";
-import { COURSES_TABLE, DbResponse, INVENTORY_TABLE } from "./db.model";
+import {
+  BRANDS_TABLE,
+  COURSES_TABLE,
+  DbResponse,
+  INVENTORY_TABLE,
+} from "./db.model";
 import zzz, { and, ZzzResponse } from "zzzql";
 
 zzz.init({
@@ -9,6 +14,24 @@ zzz.init({
   password: DB_PASSWORD,
   database: DB_NAME,
 });
+
+const getBrands = async (names: string[] | undefined) => {
+  try {
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      select: {
+        table: BRANDS_TABLE,
+        where: [{ BrandName: { eq: names } }],
+      },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
+    return { data: results };
+  } catch (e) {
+    console.error(e, " error from database query");
+    return { errors: [{ code: "", message: "" }] };
+  }
+};
 
 const getInventory = async (
   courses: string[] | undefined,
@@ -26,8 +49,9 @@ const getInventory = async (
   brands: string[] | undefined,
   dateSolds: string[] | undefined,
   reminderTextSents: number[] | undefined,
-  frontImages: string[] | undefined,
-  backImages: string[] | undefined
+  topImages: string[] | undefined,
+  bottomImages: string[] | undefined,
+  deleted: number[] | undefined
 ): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
@@ -64,9 +88,11 @@ const getInventory = async (
           and,
           { reminderTextSent: { eq: reminderTextSents } },
           and,
-          { frontImage: { eq: frontImages } },
+          { topImage: { eq: topImages } },
           and,
-          { backImage: { eq: backImages } },
+          { bottomImage: { eq: bottomImages } },
+          and,
+          { deleted: { eq: deleted } },
         ],
       },
     });
@@ -212,6 +238,7 @@ const getCourses = async (
 };
 
 export default {
+  getBrands,
   getInventory,
   postInventory,
   patchInventory,

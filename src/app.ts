@@ -10,6 +10,7 @@ import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
 import { getCourses } from "./services/courses/courses.service";
 import { postImageText } from "./services/ai/ai.service";
+import { getBrands } from "./services/brands/brands.service";
 const { auth } = require("express-oauth2-jwt-bearer");
 
 const app = express();
@@ -35,12 +36,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.use(
-  auth({
-    issuerBaseURL: AUTH_ISSUER,
-    audience: AUTH_AUDIENCE,
-  })
-);
+const requireLogin = auth({
+  issuerBaseURL: AUTH_ISSUER,
+  audience: AUTH_AUDIENCE,
+});
 
 app.use(
   cors({
@@ -50,17 +49,20 @@ app.use(
   })
 );
 
-app.get("/", (_req, res) => {
+app.get("/health-check", (_req, res) => {
+  // TODO: check db connection
   res.send("healthy");
 });
 
+app.get("/brands", getBrands);
+
 app.get("/inventory", getInventory);
-app.post("/inventory", postInventory);
-app.patch("/inventory/:itemId", patchInventory);
+app.post("/inventory", requireLogin, postInventory);
+app.patch("/inventory/:itemId", requireLogin, patchInventory);
 
 app.get("/courses", getCourses);
 
-app.post("/ai/image", postImageText);
+app.post("/ai/image", requireLogin, postImageText);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

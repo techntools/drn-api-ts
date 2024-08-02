@@ -25,8 +25,9 @@ export const getInventory = async (req: Request, res: Response) => {
     query.brand,
     query.dateSold,
     query.reminderTextSent,
-    query.frontImage,
-    query.backImage
+    query.topImage,
+    query.bottomImage,
+    query.deleted ?? [0]
   );
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getInventory)");
@@ -87,7 +88,9 @@ export const patchInventory = async (req: Request, res: Response) => {
   const body = req.body as PatchInventoryBody;
   const { itemId } = req.params;
   if (typeof itemId !== "number") {
-    res.status(400).send();
+    res
+      .status(400)
+      .send({ errors: [{ code: "", message: "unknown item id type" }] });
     return;
   }
   const dbResponse = await db.patchInventory(itemId, body.data.attributes);
