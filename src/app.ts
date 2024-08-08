@@ -12,29 +12,29 @@ import { getCourses } from "./services/courses/courses.service";
 import { postImageText } from "./services/ai/ai.service";
 import { getBrands } from "./services/brands/brands.service";
 const { auth } = require("express-oauth2-jwt-bearer");
+import { healthCheck } from "./db/db";
+import { getDiscs } from "./services/discs/discs.service";
 
 const app = express();
 
 app.use(express.json({ limit: "5mb" }));
 
 const apiSpec = openApiSpec as any; // TODO: use yaml by path (best) or import (last)
-app.use(
+
+const apiSpecMiddleware = [
   OpenApiValidator.middleware({
     apiSpec,
     validateRequests: true,
     validateResponses: true,
-  })
-);
-
-app.use((err, req, res, next) => {
-  console.error(err, "api spec error");
-  // TODO: decide if want to return this message
-  //        or something more generic
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
-});
+  }),
+  (err, req, res, next) => {
+    console.error(err, "api spec error");
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  },
+];
 
 const requireLogin = auth({
   issuerBaseURL: AUTH_ISSUER,
@@ -49,20 +49,31 @@ app.use(
   })
 );
 
-app.get("/health-check", (_req, res) => {
-  // TODO: check db connection
+app.get("/health-check", async (_req, res) => {
+  const dbResponse = await healthCheck();
+  if ("errors" in dbResponse) {
+    res.status(500).send("sick");
+    return;
+  }
   res.send("healthy");
 });
 
-app.get("/brands", getBrands);
+app.get("/discs", ...apiSpecMiddleware, getDiscs);
 
-app.get("/inventory", getInventory);
-app.post("/inventory", requireLogin, postInventory);
-app.patch("/inventory/:itemId", requireLogin, patchInventory);
+app.get("/brands", ...apiSpecMiddleware, getBrands);
 
-app.get("/courses", getCourses);
+app.get("/inventory", ...apiSpecMiddleware, getInventory);
+app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
+app.patch(
+  "/inventory/:itemId",
+  requireLogin,
+  ...apiSpecMiddleware,
+  patchInventory
+);
 
-app.post("/ai/image", requireLogin, postImageText);
+app.get("/courses", ...apiSpecMiddleware, getCourses);
+
+app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

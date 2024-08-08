@@ -3,6 +3,7 @@ import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, IS_PRODUCTION } from "../env";
 import {
   BRANDS_TABLE,
   COURSES_TABLE,
+  DISCS_TABLE,
   DbResponse,
   INVENTORY_TABLE,
 } from "./db.model";
@@ -21,6 +22,38 @@ const getBrands = async (names: string[] | undefined) => {
       select: {
         table: BRANDS_TABLE,
         where: [{ BrandName: { eq: names } }],
+      },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
+    return { data: results };
+  } catch (e) {
+    console.error(e, " error from database query");
+    return { errors: [{ code: "", message: "" }] };
+  }
+};
+
+const getDiscs = async (
+  names: string[] | undefined,
+  brandIds: number[] | undefined,
+  brandNames: string[] | undefined
+) => {
+  try {
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      select: {
+        table: DISCS_TABLE,
+        where: [
+          { MoldName: { eq: names } },
+          and,
+          { BrandID: { eq: brandIds } },
+          and,
+          { [`${BRANDS_TABLE}.BrandName`]: { eq: brandNames } },
+        ],
+        leftJoin: {
+          table: BRANDS_TABLE,
+          on: [{ BrandID: { eq: "BrandID" } }],
+        },
       },
     });
     if ("error" in results) {
@@ -237,8 +270,26 @@ const getCourses = async (
   }
 };
 
+export const healthCheck = async (): Promise<DbResponse> => {
+  try {
+    const pool = zzz.pool();
+    if (!pool) {
+      throw Error("pool not init");
+    }
+    const [result, _fields] = await pool.query("SELECT 1");
+    if (!Array.isArray(result)) {
+      throw Error(`unexpected result: ${JSON.stringify(result)}`);
+    }
+    return { data: result };
+  } catch (e) {
+    console.error(e, "health check error");
+    return { errors: [] };
+  }
+};
+
 export default {
   getBrands,
+  getDiscs,
   getInventory,
   postInventory,
   patchInventory,

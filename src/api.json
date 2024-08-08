@@ -165,7 +165,7 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "$ref": "#/components/schemas/Disc"
+                        "$ref": "#/components/schemas/InventoryItem"
                       }
                     }
                   }
@@ -185,7 +185,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PostDisc"
+                "$ref": "#/components/schemas/PostInventoryItem"
               }
             }
           }
@@ -196,7 +196,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PostDiscResponse"
+                  "$ref": "#/components/schemas/PostInventoryItemResponse"
                 }
               }
             }
@@ -226,7 +226,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PatchDisc"
+                "$ref": "#/components/schemas/PatchInventoryItem"
               }
             }
           }
@@ -237,7 +237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PatchDiscResponse"
+                  "$ref": "#/components/schemas/PatchInventoryItemResponse"
                 }
               }
             }
@@ -457,6 +457,99 @@
           }
         }
       }
+    },
+    "/discs": {
+      "get": {
+        "tags": ["discs"],
+        "summary": "Get disc molds",
+        "description": "Retrieve disc molds and filter by params",
+        "operationId": "getDiscs",
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Filter by one or more disc mold name",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "brandId",
+            "description": "Filter by one or more brand id",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "brandName",
+            "description": "Filter by one or more brand name",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": ["id", "type", "attributes"],
+                        "properties": {
+                          "id": { "type": "number" },
+                          "type": { "type": "string", "example": "disc" },
+                          "attributes": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": ["MoldName", "BrandID", "BrandName"],
+                            "properties": {
+                              "MoldName": { "type": "string" },
+                              "BrandID": { "type": "number" },
+                              "BrandName": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health-check": {
+      "get": {
+        "tags": ["health-check"],
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "500": {
+            "description": "Unhealthy"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -486,7 +579,7 @@
         "type": "number",
         "enum": [0, 1, null]
       },
-      "Disc": {
+      "InventoryItem": {
         "type": "object",
         "additionalProperties": false,
         "required": ["id", "type", "attributes"],
@@ -599,7 +692,7 @@
           }
         }
       },
-      "PostDisc": {
+      "PostInventoryItem": {
         "type": "object",
         "required": ["data"],
         "additionalProperties": false,
@@ -699,7 +792,7 @@
           }
         }
       },
-      "PostDiscResponse": {
+      "PostInventoryItemResponse": {
         "type": "object",
         "required": ["data"],
         "additionalProperties": false,
@@ -802,7 +895,7 @@
           }
         }
       },
-      "PatchDisc": {
+      "PatchInventoryItem": {
         "type": "object",
         "required": ["data"],
         "properties": {
@@ -910,7 +1003,7 @@
           }
         }
       },
-      "PatchDiscResponse": {
+      "PatchInventoryItemResponse": {
         "type": "object",
         "required": ["data"],
         "additionalProperties": false,
