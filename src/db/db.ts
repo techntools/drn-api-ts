@@ -1,5 +1,5 @@
 import { QueryResult } from "mysql2";
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, IS_PRODUCTION } from "../env";
+import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from "../env";
 import {
   BRANDS_TABLE,
   COURSES_TABLE,
@@ -46,7 +46,7 @@ const getDiscs = async (
         where: [
           { MoldName: { eq: names } },
           and,
-          { BrandID: { eq: brandIds } },
+          { [`${DISCS_TABLE}.BrandID`]: { eq: brandIds } },
           and,
           { [`${BRANDS_TABLE}.BrandName`]: { eq: brandNames } },
         ],
@@ -150,9 +150,6 @@ const postInventory = async (attributes: {
   color: string;
   brand: string;
 }): Promise<DbResponse> => {
-  if (IS_PRODUCTION === "T" && attributes.course !== "DRN Admins") {
-    throw Error(`IS_PRODUCTION && attributes.course !== "DRN Admins"`);
-  }
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       insert: { table: INVENTORY_TABLE, values: attributes },
@@ -181,13 +178,6 @@ const patchInventory = async (
     brand?: string;
   }
 ): Promise<DbResponse> => {
-  if (
-    "course" in attributes &&
-    IS_PRODUCTION === "T" &&
-    attributes.course !== "DRN Admins"
-  ) {
-    throw Error(`IS_PRODUCTION && attributes.course !== "DRN Admins"`);
-  }
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       transaction: [

@@ -593,7 +593,7 @@
           },
           "attributes": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "required": [
               "course",
               "name",

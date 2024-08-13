@@ -21,6 +21,9 @@ const getImageText = async (
         {
           type: "DOCUMENT_TEXT_DETECTION",
         },
+        {
+          type: "LOGO_DETECTION",
+        },
       ],
     };
     const imgData = await imgAnnotator.annotateImage(req);

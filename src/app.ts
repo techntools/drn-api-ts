@@ -41,10 +41,37 @@ const requireLogin = auth({
   audience: AUTH_AUDIENCE,
 });
 
+const requireOrgAuth = (getOrgCode: (r) => Promise<string>) => {
+  return async (req, res, next) => {
+    const userOrgCodeRaw = req.auth?.payload?.org_code;
+    if (typeof userOrgCodeRaw !== "string" || !userOrgCodeRaw) {
+      res.status(400).send({
+        errors: [{ code: "no_org_code", message: "no org in auth" }],
+      });
+      return;
+    }
+    const userOrgCode = userOrgCodeRaw.trim();
+    if (!userOrgCode) {
+      res.status(400).send({
+        errors: [{ code: "no_org_code", message: "no org in auth" }],
+      });
+      return;
+    }
+    const recordOrgCode = await getOrgCode(req);
+    if (userOrgCode === recordOrgCode) {
+      next();
+    } else {
+      res.status(403).send({
+        errors: [{ code: "403", message: "unauthorized" }],
+      });
+    }
+  };
+};
+
 app.use(
   cors({
     allowedHeaders: ["Content-Type", "Authorization"],
-    origin: APP_CORS,
+    origin: [...APP_CORS, /\.discrescuenetwork\.com$/],
     methods: ["GET", "POST", "PATCH"],
   })
 );
@@ -63,10 +90,17 @@ app.get("/discs", ...apiSpecMiddleware, getDiscs);
 app.get("/brands", ...apiSpecMiddleware, getBrands);
 
 app.get("/inventory", ...apiSpecMiddleware, getInventory);
-app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
+app.post(
+  "/inventory",
+  requireLogin,
+  requireOrgAuth(async (r) => "org_6108516784ae"),
+  ...apiSpecMiddleware,
+  postInventory
+);
 app.patch(
   "/inventory/:itemId",
   requireLogin,
+  requireOrgAuth(async (r) => "org_6108516784ae"),
   ...apiSpecMiddleware,
   patchInventory
 );
