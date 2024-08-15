@@ -12,8 +12,9 @@ import { getCourses } from "./services/courses/courses.service";
 import { postImageText } from "./services/ai/ai.service";
 import { getBrands } from "./services/brands/brands.service";
 const { auth } = require("express-oauth2-jwt-bearer");
-import { healthCheck } from "./db/db";
+import db, { healthCheck } from "./db/db";
 import { getDiscs } from "./services/discs/discs.service";
+import { requireOrgAuth } from "./middleware";
 
 const app = express();
 
@@ -41,33 +42,6 @@ const requireLogin = auth({
   audience: AUTH_AUDIENCE,
 });
 
-const requireOrgAuth = (getOrgCode: (r) => Promise<string>) => {
-  return async (req, res, next) => {
-    const userOrgCodeRaw = req.auth?.payload?.org_code;
-    if (typeof userOrgCodeRaw !== "string" || !userOrgCodeRaw) {
-      res.status(400).send({
-        errors: [{ code: "no_org_code", message: "no org in auth" }],
-      });
-      return;
-    }
-    const userOrgCode = userOrgCodeRaw.trim();
-    if (!userOrgCode) {
-      res.status(400).send({
-        errors: [{ code: "no_org_code", message: "no org in auth" }],
-      });
-      return;
-    }
-    const recordOrgCode = await getOrgCode(req);
-    if (userOrgCode === recordOrgCode) {
-      next();
-    } else {
-      res.status(403).send({
-        errors: [{ code: "403", message: "unauthorized" }],
-      });
-    }
-  };
-};
-
 app.use(
   cors({
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -90,17 +64,53 @@ app.get("/discs", ...apiSpecMiddleware, getDiscs);
 app.get("/brands", ...apiSpecMiddleware, getBrands);
 
 app.get("/inventory", ...apiSpecMiddleware, getInventory);
-app.post(
-  "/inventory",
-  requireLogin,
-  requireOrgAuth(async (r) => "org_6108516784ae"),
-  ...apiSpecMiddleware,
-  postInventory
-);
+app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
 app.patch(
   "/inventory/:itemId",
   requireLogin,
-  requireOrgAuth(async (r) => "org_6108516784ae"),
+  requireOrgAuth(async (req, res) => {
+    const itemId = Number(req.params?.itemId);
+    console.log("itemId=", itemId, typeof itemId);
+    if (!itemId || isNaN(itemId)) {
+      res.status(400).send({
+        errors: [
+          { code: "no_inventory_item_id", message: "no itemId in path" },
+        ],
+      });
+      return null;
+    }
+    const dbResponse = await db.getInventory(
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      [itemId]
+    );
+    if (
+      "errors" in dbResponse ||
+      !Array.isArray(dbResponse.data) ||
+      dbResponse.data.length > 1 ||
+      !dbResponse.data.every((d) => typeof d === "object" && "orgCode" in d)
+    ) {
+      res.status(500).send();
+      return null;
+    }
+    return (dbResponse.data[0] as { orgCode: string }).orgCode;
+  }),
   ...apiSpecMiddleware,
   patchInventory
 );

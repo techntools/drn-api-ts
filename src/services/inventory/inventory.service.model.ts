@@ -19,9 +19,9 @@ export type GetInventoryQuery = {
   topImage?: string[];
   bottomImage?: string[];
   deleted?: (0 | 1)[];
+  id?: number[];
 };
 
-// TODO: validate
 export type PostInventoryBody = {
   data: {
     type: "inventory";
@@ -35,6 +35,7 @@ export type PostInventoryBody = {
       dateFound: string;
       color: string;
       brand: string;
+      orgCode: string;
     };
   };
 };

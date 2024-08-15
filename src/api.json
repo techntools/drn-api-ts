@@ -152,6 +152,16 @@
                 "$ref": "#/components/schemas/ZeroOrOne"
               }
             }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
           }
         ],
         "responses": {

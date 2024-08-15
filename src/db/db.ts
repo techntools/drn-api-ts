@@ -84,7 +84,8 @@ const getInventory = async (
   reminderTextSents: number[] | undefined,
   topImages: string[] | undefined,
   bottomImages: string[] | undefined,
-  deleted: number[] | undefined
+  deleted: number[] | undefined,
+  ids: number[] | undefined
 ): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
@@ -126,6 +127,8 @@ const getInventory = async (
           { bottomImage: { eq: bottomImages } },
           and,
           { deleted: { eq: deleted } },
+          and,
+          { id: { eq: ids } },
         ],
       },
     });
@@ -149,6 +152,7 @@ const postInventory = async (attributes: {
   dateFound: string;
   color: string;
   brand: string;
+  orgCode: string;
 }): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({

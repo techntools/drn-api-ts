@@ -6,6 +6,7 @@ import {
   PostInventoryBody,
 } from "./inventory.service.model";
 import db from "../../db/db";
+import { handleOrgCode } from "../../middleware";
 
 export const getInventory = async (req: Request, res: Response) => {
   const query = req.query as GetInventoryQuery;
@@ -27,7 +28,8 @@ export const getInventory = async (req: Request, res: Response) => {
     query.reminderTextSent,
     query.topImage,
     query.bottomImage,
-    query.deleted ?? [0]
+    query.deleted ?? [0],
+    query.id
   );
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getInventory)");
@@ -69,7 +71,14 @@ export const getInventory = async (req: Request, res: Response) => {
 
 export const postInventory = async (req: Request, res: Response) => {
   const body = req.body as PostInventoryBody;
-  const dbResponse = await db.postInventory(body.data.attributes);
+  const orgCode = handleOrgCode(req, res);
+  if (orgCode === null) {
+    return;
+  }
+  const dbResponse = await db.postInventory({
+    orgCode,
+    ...body.data.attributes,
+  });
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (postInventory)");
     res.status(500).send(dbResponse);
