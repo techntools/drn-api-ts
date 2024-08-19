@@ -83,6 +83,14 @@
             }
           },
           {
+            "name": "dateOfReminderText",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": { "type": "string", "format": "date" }
+            }
+          },
+          {
             "name": "dateClaimed",
             "in": "query",
             "schema": {
@@ -788,6 +796,11 @@
                   "reminderTextSent": {
                     "$ref": "#/components/schemas/ZeroOrOneNullable"
                   },
+                  "dateOfReminderText": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
+                  },
                   "topImage": {
                     "type": "string",
                     "nullable": true
@@ -891,6 +904,11 @@
                   "reminderTextSent": {
                     "$ref": "#/components/schemas/ZeroOrOneNullable"
                   },
+                  "dateOfReminderText": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
+                  },
                   "topImage": {
                     "type": "string",
                     "nullable": true
@@ -935,6 +953,7 @@
                   { "required": ["brand"] },
                   { "required": ["dateSold"] },
                   { "required": ["reminderTextSent"] },
+                  { "required": ["dateOfReminderText"] },
                   { "required": ["topImage"] },
                   { "required": ["bottomImage"] },
                   { "required": ["deleted"] }
@@ -997,6 +1016,11 @@
                   },
                   "reminderTextSent": {
                     "$ref": "#/components/schemas/ZeroOrOne"
+                  },
+                  "dateOfReminderText": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
                   },
                   "topImage": {
                     "type": "string",
@@ -1047,6 +1071,7 @@
                   { "required": ["brand"] },
                   { "required": ["dateSold"] },
                   { "required": ["reminderTextSent"] },
+                  { "required": ["dateOfReminderText"] },
                   { "required": ["topImage"] },
                   { "required": ["bottomImage"] },
                   { "required": ["deleted"] }
@@ -1109,6 +1134,11 @@
                   },
                   "reminderTextSent": {
                     "$ref": "#/components/schemas/ZeroOrOne"
+                  },
+                  "dateOfReminderText": {
+                    "type": "string",
+                    "format": "date",
+                    "nullable": true
                   },
                   "topImage": {
                     "type": "string",

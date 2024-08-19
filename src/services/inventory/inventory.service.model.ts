@@ -20,6 +20,7 @@ export type GetInventoryQuery = {
   bottomImage?: string[];
   deleted?: (0 | 1)[];
   id?: number[];
+  dateOfReminderText?: string[];
 };
 
 export type PostInventoryBody = {

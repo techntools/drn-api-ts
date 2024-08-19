@@ -29,7 +29,8 @@ export const getInventory = async (req: Request, res: Response) => {
     query.topImage,
     query.bottomImage,
     query.deleted ?? [0],
-    query.id
+    query.id,
+    query.dateOfReminderText
   );
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getInventory)");

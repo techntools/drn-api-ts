@@ -98,7 +98,8 @@ app.patch(
       undefined,
       undefined,
       undefined,
-      [itemId]
+      [itemId],
+      undefined
     );
     if (
       "errors" in dbResponse ||
