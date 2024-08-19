@@ -15,6 +15,7 @@ const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
 import { getDiscs } from "./services/discs/discs.service";
 import { requireOrgAuth } from "./middleware";
+import { handleTwilioOptIn } from "./services/sms-consent/sms-consent.service";
 
 const app = express();
 
@@ -119,6 +120,8 @@ app.patch(
 app.get("/courses", ...apiSpecMiddleware, getCourses);
 
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
+
+app.post("/twilio/opt-in", handleTwilioOptIn);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

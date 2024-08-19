@@ -568,6 +568,35 @@
           }
         }
       }
+    },
+    "/twilio/opt-in": {
+      "post": {
+        "tags": ["opt-in"],
+        "summary": "Endpoint for twilio webhook on opt in/out",
+        "description": "Twilio number for opt in/out to drn will post message webhook here",
+        "operationId": "handleTwilioOptIn",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
