@@ -43,6 +43,21 @@ if (!process.env.AUTH_AUDIENCE) {
 }
 export const AUTH_AUDIENCE = process.env.AUTH_AUDIENCE;
 
+if (!process.env.TWILIO_SID) {
+  errors.push("TWILIO_SID");
+}
+export const TWILIO_SID = process.env.TWILIO_SID;
+
+if (!process.env.TWILIO_AUTH_TOKEN) {
+  errors.push("TWILIO_AUTH_TOKEN");
+}
+export const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+
+if (!process.env.TWILIO_SEND_FROM) {
+  errors.push("TWILIO_SEND_FROM");
+}
+export const TWILIO_SEND_FROM = process.env.TWILIO_SEND_FROM;
+
 if (errors.length > 0) {
   throw new Error(`Env vars missing: ${errors.join(", ")}`);
 }

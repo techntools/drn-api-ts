@@ -15,11 +15,16 @@ const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
 import { getDiscs } from "./services/discs/discs.service";
 import { requireOrgAuth } from "./middleware";
-import { handleTwilioOptIn } from "./services/sms-consent/sms-consent.service";
+import {
+  getPhoneOptIns,
+  handleTwilioOptIn,
+} from "./services/sms-consent/sms-consent.service";
+import bodyParser from "body-parser";
 
 const app = express();
 
 app.use(express.json({ limit: "5mb" }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const apiSpec = openApiSpec as any; // TODO: use yaml by path (best) or import (last)
 
@@ -121,7 +126,8 @@ app.get("/courses", ...apiSpecMiddleware, getCourses);
 
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
-app.post("/twilio/opt-in", handleTwilioOptIn);
+app.get("/phone-opt-ins", getPhoneOptIns);
+app.post("/phone-opt-ins/twilio", handleTwilioOptIn);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

@@ -26,6 +26,7 @@
     "express-oauth2-jwt-bearer": "^1.6.0",
     "express-openapi-validator": "^5.2.0",
     "mysql2": "^3.10.3",
+    "twilio": "^5.2.2",
     "zzzql": "1.1.8"
   }
 }

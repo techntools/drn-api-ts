@@ -6,6 +6,7 @@ import {
   DISCS_TABLE,
   DbResponse,
   INVENTORY_TABLE,
+  PHONE_OPT_IN_TABLE,
 } from "./db.model";
 import zzz, { and, ZzzResponse } from "zzzql";
 
@@ -286,6 +287,50 @@ export const healthCheck = async (): Promise<DbResponse> => {
   }
 };
 
+export const putPhoneOptIn = async ({
+  id,
+  optIn,
+}: {
+  id: string;
+  optIn: 0 | 1;
+}): Promise<DbResponse> => {
+  try {
+    const pool = zzz.pool();
+    if (!pool) {
+      throw Error("pool not init");
+    }
+    const [result, _fields] = await pool.query(
+      `INSERT INTO ${PHONE_OPT_IN_TABLE} (id, sms_consent)` +
+        ` VALUES ("${id}", ${optIn}) AS new_opt_in` +
+        ` ON DUPLICATE KEY UPDATE sms_consent = new_opt_in.sms_consent;`
+    );
+    return { data: result };
+  } catch (e) {
+    console.error(e, "putPhoneOptIn error");
+    return { errors: [] };
+  }
+};
+
+const getPhoneOptIns = async (
+  phones: string[] | undefined
+): Promise<DbResponse> => {
+  try {
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      select: {
+        table: PHONE_OPT_IN_TABLE,
+        where: [{ id: { eq: phones } }],
+      },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
+    return { data: results };
+  } catch (e) {
+    console.error(e, " error from database query (getPhoneOptIns");
+    return { errors: [{ code: "", message: "" }] };
+  }
+};
+
 export default {
   getBrands,
   getDiscs,
@@ -293,4 +338,5 @@ export default {
   postInventory,
   patchInventory,
   getCourses,
+  getPhoneOptIns,
 };
