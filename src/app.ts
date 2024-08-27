@@ -147,10 +147,6 @@ END:VCARD
 `
   );
 });
-app.get("/phone-opt-ins/test", async (req, res) => {
-  await sendVCard("+18047670999", "test");
-  res.send("thx");
-});
 app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
 
 app.listen(APP_PORT, () => {
