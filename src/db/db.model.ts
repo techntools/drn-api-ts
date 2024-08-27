@@ -1,4 +1,4 @@
-import { Pool, QueryResult } from "mysql2/promise";
+import { QueryResult } from "mysql2/promise";
 import { TResponse } from "../app.model";
 
 export const BRANDS_TABLE = "brands";

@@ -7,7 +7,19 @@ import {
 } from "./inventory.service.model";
 import db from "../../db/db";
 import { handleOrgCode } from "../../middleware";
+import { sendSms } from "../sms/twilio.service";
+import { formatClaimInventoryMessage } from "../sms/sms.model";
+import {
+  smsGetCurrentUnclaimedInventory,
+  smsGetOptInStatus,
+} from "../sms/sms.service";
 
+/**
+ * get inventory
+ * @param req
+ * @param res
+ * @returns
+ */
 export const getInventory = async (req: Request, res: Response) => {
   const query = req.query as GetInventoryQuery;
   const dbResponse = await db.getInventory(
@@ -90,6 +102,16 @@ export const postInventory = async (req: Request, res: Response) => {
     res.status(500).send({ errors: [{ code: "", message: "" }] });
     return;
   }
+  const unclaimedData = await smsGetCurrentUnclaimedInventory(
+    body.data.attributes.phoneNumber
+  );
+  const optInStatus = await smsGetOptInStatus(body.data.attributes.phoneNumber);
+  const sendSmsResponse = await sendSms(
+    body.data.attributes.phoneNumber,
+    optInStatus === 1
+      ? formatClaimInventoryMessage(unclaimedData.length)
+      : `Reply START or DISC to subscribe to Disc Rescue Network texts.`
+  );
   res.send({
     data: { id: dbResponse.data.insertId, ...body.data, type: INVENTORY_TYPE },
   });

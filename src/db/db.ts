@@ -287,7 +287,7 @@ export const healthCheck = async (): Promise<DbResponse> => {
   }
 };
 
-export const putPhoneOptIn = async ({
+const putPhoneOptIn = async ({
   id,
   optIn,
 }: {
@@ -339,4 +339,5 @@ export default {
   patchInventory,
   getCourses,
   getPhoneOptIns,
+  putPhoneOptIn,
 };

@@ -574,7 +574,7 @@
         "tags": ["phone-opt-ins"],
         "summary": "Endpoint for twilio webhook on opt in/out",
         "description": "Twilio number for opt in/out to drn will post message webhook here",
-        "operationId": "handleTwilioOptIn",
+        "operationId": "handleTwilioSms",
         "requestBody": {
           "content": {
             "application/json": {
@@ -652,11 +652,63 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": ["phone-opt-ins"],
+        "summary": "Create/update phone opt-ins and filter by phone numbers in e.164 format",
+        "operationId": "putPhoneOptIns",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PutPhoneOptIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PutPhoneOptIn"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
+      "PutPhoneOptIn": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "type", "attributes"],
+            "properties": {
+              "id": { "type": "string", "example": "+8045938234" },
+              "type": { "type": "string", "example": "phoneOptIn" },
+              "attributes": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["smsConsent"],
+                "properties": {
+                  "smsConsent": {
+                    "$ref": "#/components/schemas/ZeroOrOne"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Statuses": {
         "type": "string",
         "enum": [

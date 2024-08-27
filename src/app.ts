@@ -17,9 +17,11 @@ import { getDiscs } from "./services/discs/discs.service";
 import { requireOrgAuth } from "./middleware";
 import {
   getPhoneOptIns,
-  handleTwilioOptIn,
-} from "./services/sms-consent/sms-consent.service";
+  handleTwilioSms,
+  putPhoneOptIn,
+} from "./services/sms/sms.service";
 import bodyParser from "body-parser";
+import { sendVCard } from "./services/sms/twilio.service";
 
 const app = express();
 
@@ -127,7 +129,29 @@ app.get("/courses", ...apiSpecMiddleware, getCourses);
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
 app.get("/phone-opt-ins", getPhoneOptIns);
-app.post("/phone-opt-ins/twilio", handleTwilioOptIn);
+app.post("/phone-opt-ins/twilio", handleTwilioSms);
+app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
+  res.setHeader("Content-Type", "text/vcard");
+  res.send(
+    `BEGIN:VCARD
+VERSION:3.0
+FN;CHARSET=UTF-8:Disc Rescue Network
+N;CHARSET=UTF-8:;Disc Rescue Network;;;
+TEL;TYPE=WORK,VOICE:+18776216596
+TITLE;CHARSET=UTF-8:Company
+ORG;CHARSET=UTF-8:Disc Rescue Network
+URL;CHARSET=UTF-8:https://app.discrescuenetwork.com
+REV:2024-08-27T02:13:10.380Z
+END:VCARD
+
+`
+  );
+});
+app.get("/phone-opt-ins/test", async (req, res) => {
+  await sendVCard("+18047670999", "test");
+  res.send("thx");
+});
+app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

@@ -58,6 +58,11 @@ if (!process.env.TWILIO_SEND_FROM) {
 }
 export const TWILIO_SEND_FROM = process.env.TWILIO_SEND_FROM;
 
+if (!process.env.TWILIO_WEBHOOK_URL) {
+  errors.push("TWILIO_WEBHOOK_URL");
+}
+export const TWILIO_WEBHOOK_URL = process.env.TWILIO_WEBHOOK_URL;
+
 if (errors.length > 0) {
   throw new Error(`Env vars missing: ${errors.join(", ")}`);
 }
