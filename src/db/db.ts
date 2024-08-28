@@ -312,13 +312,18 @@ const putPhoneOptIn = async ({
 };
 
 const getPhoneOptIns = async (
-  phones: string[] | undefined
+  phones: string[] | undefined,
+  smsConsents: (0 | 1)[] | undefined
 ): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       select: {
         table: PHONE_OPT_IN_TABLE,
-        where: [{ id: { eq: phones } }],
+        where: [
+          { id: { eq: phones } },
+          and,
+          { sms_consent: { eq: smsConsents } },
+        ],
       },
     });
     if ("error" in results) {

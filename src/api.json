@@ -614,6 +614,17 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "name": "smsConsent",
+            "description": "Filter by smsconsent",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/ZeroOrOne"
+              }
+            }
           }
         ],
         "responses": {
@@ -1298,8 +1309,8 @@
         "required": ["id", "type", "attributes"],
         "properties": {
           "id": {
-            "type": "number",
-            "example": 13593
+            "type": "string",
+            "example": "org_alksndfalfn"
           },
           "type": {
             "type": "string"

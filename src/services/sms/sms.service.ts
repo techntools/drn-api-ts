@@ -100,7 +100,7 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
 
 export const getPhoneOptIns = async (request: Request, response: Response) => {
   const query = request.query as GetPhoneOptInsQuery;
-  const dbResponse = await db.getPhoneOptIns(query.phone);
+  const dbResponse = await db.getPhoneOptIns(query.phone, query.smsConsent);
   if ("errors" in dbResponse) {
     console.error(dbResponse, "errors in dbResponse (getPhoneOptIns)");
     response.status(500).send(dbResponse);
@@ -137,7 +137,7 @@ export const putPhoneOptIn = async (request: Request, response: Response) => {
 export const smsGetOptInStatus = async (
   phoneNumber: string
 ): Promise<0 | 1> => {
-  const optInStatusResponse = await db.getPhoneOptIns([phoneNumber]);
+  const optInStatusResponse = await db.getPhoneOptIns([phoneNumber], undefined);
   if ("errors" in optInStatusResponse) {
     throw new Error(JSON.stringify(optInStatusResponse.errors));
   }

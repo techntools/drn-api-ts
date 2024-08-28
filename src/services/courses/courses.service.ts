@@ -37,7 +37,7 @@ export const getCourses = async (req: Request, res: Response) => {
             value instanceof Date ? value.toISOString() : value)
       );
       return {
-        id: -1,
+        id: attributes.orgCode,
         type: "course",
         attributes,
       };
