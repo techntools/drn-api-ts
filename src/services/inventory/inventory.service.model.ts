@@ -37,6 +37,7 @@ export type PostInventoryBody = {
       color: string;
       brand: string;
       orgCode: string;
+      textImmediately?: 0 | 1;
     };
   };
 };

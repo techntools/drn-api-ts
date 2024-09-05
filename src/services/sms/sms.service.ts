@@ -6,8 +6,10 @@ import {
   OPT_IN_KEYWORDS,
   OPT_OUT_KEYWORDS,
   PHONE_OPT_IN_TYPE,
+  PostSmsBody,
   PutPhoneOptInBody,
   formatClaimInventoryMessage,
+  optInMessage,
 } from "./sms.model";
 import {
   TWILIO_AUTH_TOKEN,
@@ -15,7 +17,7 @@ import {
   TWILIO_SEND_FROM,
   TWILIO_WEBHOOK_URL,
 } from "../../env";
-import { sendVCard } from "./twilio.service";
+import { sendSms, sendVCard } from "./twilio.service";
 
 export const handleTwilioSms = async (request: Request, response: Response) => {
   try {
@@ -68,6 +70,9 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
           // check opt in before sending message if not a opt in/out keyword
           const optInStatus = await smsGetOptInStatus(phoneNumber);
           if (optInStatus === 0) {
+            response.status(418).send();
+          } else if (optInStatus === null) {
+            await sendSms(phoneNumber, optInMessage);
             response.status(418).send();
           }
         }
@@ -136,7 +141,7 @@ export const putPhoneOptIn = async (request: Request, response: Response) => {
 
 export const smsGetOptInStatus = async (
   phoneNumber: string
-): Promise<0 | 1> => {
+): Promise<0 | 1 | null> => {
   const optInStatusResponse = await db.getPhoneOptIns([phoneNumber], undefined);
   if ("errors" in optInStatusResponse) {
     throw new Error(JSON.stringify(optInStatusResponse.errors));
@@ -146,7 +151,7 @@ export const smsGetOptInStatus = async (
     optInStatusResponse.data.length === 1
       ? (optInStatusResponse.data[0] as Record<"sms_consent", 1 | 0>)
           .sms_consent
-      : 0;
+      : null;
   return optInStatus;
 };
 
@@ -183,4 +188,17 @@ export const smsGetCurrentUnclaimedInventory = async (
     throw new Error("unexpected response currentInventoryForUser");
   }
   return data;
+};
+
+export const postSms = async (request: Request, response: Response) => {
+  const postSmsRequestBody = request.body as PostSmsBody;
+  const sendSmsResponse = await sendSms(
+    postSmsRequestBody.data.phone,
+    postSmsRequestBody.data.message
+  );
+  if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
+    response.status(500).send("Error sending sms");
+    return;
+  }
+  response.status(200).send("Success");
 };

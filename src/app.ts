@@ -18,6 +18,7 @@ import { requireOrgAuth } from "./middleware";
 import {
   getPhoneOptIns,
   handleTwilioSms,
+  postSms,
   putPhoneOptIn,
 } from "./services/sms/sms.service";
 import bodyParser from "body-parser";
@@ -148,6 +149,7 @@ END:VCARD
   );
 });
 app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
+app.post("/sms", requireLogin, ...apiSpecMiddleware, postSms);
 
 app.listen(APP_PORT, () => {
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);

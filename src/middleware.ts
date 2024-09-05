@@ -1,3 +1,5 @@
+import { AUTH_ISSUER } from "./env";
+
 export const handleOrgCode = (req, res): string | null => {
   const userOrgCodeRaw = req.auth?.payload?.org_code;
   if (typeof userOrgCodeRaw !== "string" || !userOrgCodeRaw) {
@@ -20,11 +22,15 @@ export const requireOrgAuth = (
   getOrgCode: (request, response) => Promise<string | null>
 ) => {
   return async (req, res, next) => {
+    if (allowClientCredentialsGrantType(req)) {
+      next();
+      return;
+    }
     const userOrgCode = handleOrgCode(req, res);
     if (userOrgCode === null) {
       return;
     }
-    const recordOrgCode = await getOrgCode(req, req);
+    const recordOrgCode = await getOrgCode(req, res);
     if (userOrgCode === recordOrgCode) {
       next();
     } else {
@@ -33,4 +39,16 @@ export const requireOrgAuth = (
       });
     }
   };
+};
+
+const allowClientCredentialsGrantType = (req): boolean => {
+  const grantType = req.auth?.payload?.gty ?? null;
+  if (!Array.isArray(grantType) || !grantType.includes("client_credentials")) {
+    return false;
+  }
+  const issuer = req.auth?.payload?.iss ?? null;
+  if (issuer !== AUTH_ISSUER) {
+    return false;
+  }
+  return true;
 };

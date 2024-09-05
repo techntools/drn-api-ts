@@ -8,7 +8,7 @@ import {
 import db from "../../db/db";
 import { handleOrgCode } from "../../middleware";
 import { sendSms } from "../sms/twilio.service";
-import { formatClaimInventoryMessage } from "../sms/sms.model";
+import { formatClaimInventoryMessage, optInMessage } from "../sms/sms.model";
 import {
   smsGetCurrentUnclaimedInventory,
   smsGetOptInStatus,
@@ -88,6 +88,10 @@ export const postInventory = async (req: Request, res: Response) => {
   if (orgCode === null) {
     return;
   }
+
+  const textImmediately = body.data.attributes.textImmediately === 1;
+  delete body.data.attributes.textImmediately;
+
   const dbResponse = await db.postInventory({
     orgCode,
     ...body.data.attributes,
@@ -102,16 +106,25 @@ export const postInventory = async (req: Request, res: Response) => {
     res.status(500).send({ errors: [{ code: "", message: "" }] });
     return;
   }
-  const unclaimedData = await smsGetCurrentUnclaimedInventory(
-    body.data.attributes.phoneNumber
-  );
-  const optInStatus = await smsGetOptInStatus(body.data.attributes.phoneNumber);
-  const sendSmsResponse = await sendSms(
-    body.data.attributes.phoneNumber,
-    optInStatus === 1
-      ? formatClaimInventoryMessage(unclaimedData.length)
-      : `Reply START or DISC to subscribe to Disc Rescue Network texts.`
-  );
+
+  if (textImmediately) {
+    console.log("textImmediately");
+    const unclaimedData = await smsGetCurrentUnclaimedInventory(
+      body.data.attributes.phoneNumber
+    );
+    const optInStatus = await smsGetOptInStatus(
+      body.data.attributes.phoneNumber
+    );
+    if (optInStatus === null) {
+      await sendSms(body.data.attributes.phoneNumber, optInMessage);
+    } else if (optInStatus === 1) {
+      await sendSms(
+        body.data.attributes.phoneNumber,
+        formatClaimInventoryMessage(unclaimedData.length)
+      );
+    }
+  }
+
   res.send({
     data: { id: dbResponse.data.insertId, ...body.data, type: INVENTORY_TYPE },
   });

@@ -690,10 +690,53 @@
           }
         }
       }
+    },
+    "/sms": {
+      "post": {
+        "tags": ["phone-opt-ins"],
+        "operationId": "postSms",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostSms"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "PostSms": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["phone", "message"],
+            "properties": {
+              "phone": { "type": "string" },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      },
       "PutPhoneOptIn": {
         "type": "object",
         "additionalProperties": false,
@@ -886,6 +929,10 @@
                   "brand"
                 ],
                 "properties": {
+                  "textImmediately": {
+                    "$ref": "#/components/schemas/ZeroOrOne",
+                    "description": "Pass textImmediately=1 to send an alert text immediately on disc post if user is opted in; send opt in request if user is not opted in or out."
+                  },
                   "course": {
                     "type": "string",
                     "nullable": true
