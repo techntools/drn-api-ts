@@ -37,6 +37,6 @@ export const formatClaimInventoryMessage = (
 ) => {
   const discsWord = unclaimedInventoryLength > 1 ? "discs" : "disc";
   return unclaimedInventoryLength > 0
-    ? `Disc Rescue Network (DRN): You have ${unclaimedInventoryLength} ${discsWord} waiting to be claimed. Claim your ${discsWord}: https://bit.ly/3MjWTRh`
-    : `Disc Rescue Network (DRN): We do not have any discs in the system with your phone number, however, at any time you can visit https://bit.ly/3MjWTRh to search the inventory for your lost plastic. Additionally, if any show up in the network, we will let you know.`;
+    ? `Disc Rescue Network (DRN): You have ${unclaimedInventoryLength} ${discsWord} waiting to be claimed. Claim your ${discsWord}: https://app.discrescuenetwork.com`
+    : `Disc Rescue Network (DRN): We do not have any discs in the system with your phone number, however, at any time you can visit https://app.discrescuenetwork.com to search the inventory for your lost plastic. Additionally, if any show up in the network, we will let you know.`;
 };

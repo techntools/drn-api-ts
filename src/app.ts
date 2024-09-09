@@ -23,6 +23,7 @@ import {
 } from "./services/sms/sms.service";
 import bodyParser from "body-parser";
 import { sendVCard } from "./services/sms/twilio.service";
+import { vcard } from "./vcard";
 
 const app = express();
 
@@ -133,20 +134,7 @@ app.get("/phone-opt-ins", getPhoneOptIns);
 app.post("/phone-opt-ins/twilio", handleTwilioSms);
 app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
   res.setHeader("Content-Type", "text/vcard");
-  res.send(
-    `BEGIN:VCARD
-VERSION:3.0
-FN;CHARSET=UTF-8:Disc Rescue Network
-N;CHARSET=UTF-8:;Disc Rescue Network;;;
-TEL;TYPE=WORK,VOICE:+18776216596
-TITLE;CHARSET=UTF-8:Company
-ORG;CHARSET=UTF-8:Disc Rescue Network
-URL;CHARSET=UTF-8:https://app.discrescuenetwork.com
-REV:2024-08-27T02:13:10.380Z
-END:VCARD
-
-`
-  );
+  res.send(vcard);
 });
 app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
 app.post("/sms", requireLogin, ...apiSpecMiddleware, postSms);

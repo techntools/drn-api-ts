@@ -13,6 +13,7 @@ export const sendSms = async (
       body: messageBody,
       from: TWILIO_SEND_FROM,
       to: toPhoneNumber,
+      shortenUrls: true,
     });
     console.log("messageInstance", messageInstance);
   } catch (e) {
