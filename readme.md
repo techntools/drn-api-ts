@@ -1,6 +1,6 @@
 # drn-api-ts
 
-This is the Disc Rescue Network API. [Click here to view the API spec.]()
+This is the Disc Rescue Network API. [Click here to view the API spec.](https://disc-rescue-network.github.io/drn-api-swagger/)
 
 ## Local Development
 
@@ -31,6 +31,7 @@ This app will throw an error and notify you of missing environment variables. Th
 - `TWILIO_SEND_FROM` = the Twilio number to send messages from
 - `TWILIO_WEBHOOK_URL` = the Twilio webhook url where new messages get POSTed to on this API
 - `TWILIO_VCF_URL` = where the VCard is served from
+- `TWILIO_MESSAGING_SID` = MGXXXXXXXXXX
 
 ## Code Architecture
 

@@ -24,7 +24,6 @@ const getImageText = async (
       ],
     };
     const imgData = await imgAnnotator.annotateImage(req);
-    console.log(JSON.stringify(imgData));
     const text = imgData[0].fullTextAnnotation.pages[0].blocks.reduce(
       (prev, data) => {
         data.paragraphs.reduce((w, e) => {

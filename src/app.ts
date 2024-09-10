@@ -80,7 +80,6 @@ app.patch(
   requireLogin,
   requireOrgAuth(async (req, res) => {
     const itemId = Number(req.params?.itemId);
-    console.log("itemId=", itemId, typeof itemId);
     if (!itemId || isNaN(itemId)) {
       res.status(400).send({
         errors: [

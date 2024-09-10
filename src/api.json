@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://put-drn-api-url/"
+      "url": "https://drn-api-v2.discrescuenetwork.com"
     }
   ],
   "tags": [

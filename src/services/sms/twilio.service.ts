@@ -1,5 +1,10 @@
 import twilio from "twilio";
-import { TWILIO_SID, TWILIO_AUTH_TOKEN, TWILIO_SEND_FROM } from "../../env";
+import {
+  TWILIO_SID,
+  TWILIO_AUTH_TOKEN,
+  TWILIO_SEND_FROM,
+  TWILIO_MESSAGING_SID,
+} from "../../env";
 import vCards from "vcards-js";
 
 const twilioClient = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
@@ -14,6 +19,7 @@ export const sendSms = async (
       from: TWILIO_SEND_FROM,
       to: toPhoneNumber,
       shortenUrls: true,
+      messagingServiceSid: TWILIO_MESSAGING_SID,
     });
     console.log("messageInstance", messageInstance);
   } catch (e) {

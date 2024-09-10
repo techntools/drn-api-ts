@@ -36,11 +36,9 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
     const phoneNumber = request.body.From;
     const message = request.body.Body;
     const messageSender = request.body.From;
-    let responseMessage: string | null =
-      "Thanks for the message -Disc Rescue Network";
+    let responseMessage: string = "Thanks for the message -Disc Rescue Network";
 
     if (message && typeof message === "string") {
-      console.log(`/twilio/opt-in ${messageSender}: "${message}"`);
       const testMessage = message.trim().toLowerCase();
       if (OPT_OUT_KEYWORDS.includes(testMessage)) {
         const dbResponse = await db.putPhoneOptIn({
@@ -49,31 +47,42 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
         });
         if ("errors" in dbResponse) {
           response.status(500).send();
+          console.error(
+            `ERROR: ${messageSender} opted out but failed to update database`
+          );
           return;
         }
         response.status(418).send();
+        return;
       } else {
+        const optInStatus = await smsGetOptInStatus(phoneNumber);
         if (OPT_IN_KEYWORDS.includes(testMessage)) {
-          const dbResponse = await db.putPhoneOptIn({
-            id: phoneNumber,
-            optIn: 1,
-          });
-          if ("errors" in dbResponse) {
-            response.status(500).send();
-            return;
+          if (optInStatus !== 1) {
+            const dbResponse = await db.putPhoneOptIn({
+              id: phoneNumber,
+              optIn: 1,
+            });
+            if ("errors" in dbResponse) {
+              response.status(500).send();
+              console.error(
+                `ERROR: ${messageSender} opted in but failed to update database`
+              );
+              return;
+            }
+            await sendVCard(
+              phoneNumber,
+              "DRN: Save our contact to make sure you get all the latest updates from Disc Rescue Network!"
+            );
           }
-          await sendVCard(
-            phoneNumber,
-            "DRN: Save our contact to make sure you get all the latest updates from Disc Rescue Network!"
-          );
         } else {
           // check opt in before sending message if not a opt in/out keyword
-          const optInStatus = await smsGetOptInStatus(phoneNumber);
           if (optInStatus === 0) {
             response.status(418).send();
+            return;
           } else if (optInStatus === null) {
             await sendSms(phoneNumber, optInMessage);
             response.status(418).send();
+            return;
           }
         }
         const currentInventoryForUser = await smsGetCurrentUnclaimedInventory(
@@ -90,10 +99,6 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
       );
     }
 
-    if (responseMessage === null) {
-      response.status(500).send();
-      return;
-    }
     const twilioResponse = new twiml.MessagingResponse();
     twilioResponse.message(responseMessage);
     response.type("text/xml").status(200).send(twilioResponse.toString());

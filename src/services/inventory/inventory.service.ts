@@ -108,7 +108,6 @@ export const postInventory = async (req: Request, res: Response) => {
   }
 
   if (textImmediately) {
-    console.log("textImmediately");
     const unclaimedData = await smsGetCurrentUnclaimedInventory(
       body.data.attributes.phoneNumber
     );
