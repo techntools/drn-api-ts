@@ -2,7 +2,14 @@ import { Request, Response } from "express";
 import { DISCS_TYPE, GetDiscsQuery } from "./discs.service.model";
 import db from "../../db/db";
 
-export const getDiscs = async (req: Request, res: Response) => {
+/**
+ * handle get /discs to retrieve and responsd with a list of disc mold data
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
+ */
+export const getDiscs = async (req: Request, res: Response): Promise<void> => {
   const query = req.query as GetDiscsQuery;
   const dbResponse = await db.getDiscs(
     query.name,

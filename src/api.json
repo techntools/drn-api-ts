@@ -132,14 +132,7 @@
               "items": { "type": "string", "format": "date" }
             }
           },
-          {
-            "name": "reminderTextSent",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": { "$ref": "#/components/schemas/ZeroOrOne" }
-            }
-          },
+
           {
             "name": "topImage",
             "in": "query",
@@ -818,7 +811,6 @@
               "claimBy",
               "brand",
               "dateSold",
-              "reminderTextSent",
               "topImage",
               "bottomImage"
             ],
@@ -882,9 +874,6 @@
                 "type": "string",
                 "format": "date",
                 "nullable": true
-              },
-              "reminderTextSent": {
-                "$ref": "#/components/schemas/ZeroOrOneNullable"
               },
               "topImage": {
                 "type": "string",
@@ -987,9 +976,6 @@
                     "type": "string",
                     "format": "date",
                     "nullable": true
-                  },
-                  "reminderTextSent": {
-                    "$ref": "#/components/schemas/ZeroOrOneNullable"
                   },
                   "dateOfReminderText": {
                     "type": "string",
@@ -1096,9 +1082,6 @@
                     "format": "date",
                     "nullable": true
                   },
-                  "reminderTextSent": {
-                    "$ref": "#/components/schemas/ZeroOrOneNullable"
-                  },
                   "dateOfReminderText": {
                     "type": "string",
                     "format": "date",
@@ -1147,7 +1130,6 @@
                   { "required": ["color"] },
                   { "required": ["brand"] },
                   { "required": ["dateSold"] },
-                  { "required": ["reminderTextSent"] },
                   { "required": ["dateOfReminderText"] },
                   { "required": ["topImage"] },
                   { "required": ["bottomImage"] },
@@ -1208,9 +1190,6 @@
                     "type": "string",
                     "format": "date",
                     "nullable": true
-                  },
-                  "reminderTextSent": {
-                    "$ref": "#/components/schemas/ZeroOrOne"
                   },
                   "dateOfReminderText": {
                     "type": "string",
@@ -1265,7 +1244,6 @@
                   { "required": ["color"] },
                   { "required": ["brand"] },
                   { "required": ["dateSold"] },
-                  { "required": ["reminderTextSent"] },
                   { "required": ["dateOfReminderText"] },
                   { "required": ["topImage"] },
                   { "required": ["bottomImage"] },
@@ -1326,9 +1304,6 @@
                     "type": "string",
                     "format": "date",
                     "nullable": true
-                  },
-                  "reminderTextSent": {
-                    "$ref": "#/components/schemas/ZeroOrOne"
                   },
                   "dateOfReminderText": {
                     "type": "string",

@@ -32,6 +32,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const apiSpec = openApiSpec as any; // TODO: use yaml by path (best) or import (last)
 
+/**
+ * middleware that enforces in the {@link openApiSpec}
+ */
 const apiSpecMiddleware = [
   OpenApiValidator.middleware({
     apiSpec,
@@ -47,11 +50,17 @@ const apiSpecMiddleware = [
   },
 ];
 
+/**
+ * middleware that requires a minimal valid auth token
+ */
 const requireLogin = auth({
   issuerBaseURL: AUTH_ISSUER,
   audience: AUTH_AUDIENCE,
 });
 
+/**
+ * cors middleware
+ */
 app.use(
   cors({
     allowedHeaders: ["Content-Type", "Authorization"],

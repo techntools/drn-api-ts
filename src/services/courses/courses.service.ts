@@ -2,7 +2,17 @@ import { Request, Response } from "express";
 import db from "../../db/db";
 import { GetCoursesQuery } from "./courses.service.model";
 
-export const getCourses = async (req: Request, res: Response) => {
+/**
+ * handle get /couurses to retrieve and respond with a list of course data
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
+ */
+export const getCourses = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const query = req.query as GetCoursesQuery;
   const dbResponse = await db.getCourses(
     query.orgCode,

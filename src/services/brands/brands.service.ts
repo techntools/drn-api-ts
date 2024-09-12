@@ -2,7 +2,14 @@ import { Request, Response } from "express";
 import db from "../../db/db";
 import { BRAND_TYPE, GetBrandsQuery } from "./brand.service.model";
 
-export const getBrands = async (req: Request, res: Response) => {
+/**
+ * handle get /brands to retrieve and respond with a list of brands
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
+ */
+export const getBrands = async (req: Request, res: Response): Promise<void> => {
   const query = req.query as GetBrandsQuery;
   const dbResponse = await db.getBrands(query.name);
   if ("errors" in dbResponse) {

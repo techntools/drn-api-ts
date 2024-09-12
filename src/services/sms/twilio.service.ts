@@ -9,6 +9,13 @@ import vCards from "vcards-js";
 
 const twilioClient = twilio(TWILIO_SID, TWILIO_AUTH_TOKEN);
 
+/**
+ * send a new text (sms) through twilio
+ *
+ * @param {string} toPhoneNumber phone number to send to
+ * @param {string} messageBody text message to send
+ * @returns
+ */
 export const sendSms = async (
   toPhoneNumber: string,
   messageBody: string
@@ -21,13 +28,23 @@ export const sendSms = async (
       shortenUrls: true,
       messagingServiceSid: TWILIO_MESSAGING_SID,
     });
-    console.log("messageInstance", messageInstance);
+    console.log(`messageInstance: ${JSON.stringify(messageInstance)}`);
+    if (messageInstance.errorCode !== null) {
+      return { errors: [] };
+    }
   } catch (e) {
     console.error(e, "twilio sendsms err");
     return { errors: [] };
   }
 };
 
+/**
+ * send drn vcard through twilio
+ *
+ * @param {string} toPhoneNumber phone number to send to
+ * @param {string} messageBody text message to send with the vcard
+ * @returns `undefined` if succesful, else error `object`
+ */
 export const sendVCard = async (
   toPhoneNumber: string,
   messageBody: string

@@ -19,7 +19,19 @@ import {
 } from "../../env";
 import { sendSms, sendVCard } from "./twilio.service";
 
-export const handleTwilioSms = async (request: Request, response: Response) => {
+/**
+ * handles the twilio webhook, to optionally respond with a message.
+ *
+ * if the response message is not set a response should not be triggered
+ *
+ * @param {Request} request express request
+ * @param {Response} response express response
+ * @returns {Promise<void>} void promise
+ */
+export const handleTwilioSms = async (
+  request: Request,
+  response: Response
+): Promise<void> => {
   try {
     console.log("handle twilio ", JSON.stringify(request.headers));
     const isTwilio = twilio.validateRequest(
@@ -108,7 +120,17 @@ export const handleTwilioSms = async (request: Request, response: Response) => {
   }
 };
 
-export const getPhoneOptIns = async (request: Request, response: Response) => {
+/**
+ * respond to a request with entries from phone-opt-ins
+ *
+ * @param {Request} request express request
+ * @param {Response} response express response
+ * @returns {Promise<void>} void promise
+ */
+export const getPhoneOptIns = async (
+  request: Request,
+  response: Response
+): Promise<void> => {
   const query = request.query as GetPhoneOptInsQuery;
   const dbResponse = await db.getPhoneOptIns(query.phone, query.smsConsent);
   if ("errors" in dbResponse) {
@@ -130,7 +152,17 @@ export const getPhoneOptIns = async (request: Request, response: Response) => {
   });
 };
 
-export const putPhoneOptIn = async (request: Request, response: Response) => {
+/**
+ * handle request to put a new phone-opt-in
+ *
+ * @param {Request} request express request
+ * @param {Response} response express response
+ * @returns {Promise<void>} void promise
+ */
+export const putPhoneOptIn = async (
+  request: Request,
+  response: Response
+): Promise<void> => {
   const body = request.body as PutPhoneOptInBody;
   const dbResponse = await db.putPhoneOptIn({
     id: body.data.id,
@@ -160,6 +192,12 @@ export const smsGetOptInStatus = async (
   return optInStatus;
 };
 
+/**
+ * get the unclaimed inventory for a phone number
+ *
+ * @param phoneNumber
+ * @returns object[]
+ */
 export const smsGetCurrentUnclaimedInventory = async (
   phoneNumber: string
 ): Promise<object[]> => {
@@ -195,6 +233,13 @@ export const smsGetCurrentUnclaimedInventory = async (
   return data;
 };
 
+/**
+ * handle post /sms to send a new text
+ *
+ * @param {Request} request express request
+ * @param {Response} response express response
+ * @returns
+ */
 export const postSms = async (request: Request, response: Response) => {
   const postSmsRequestBody = request.body as PostSmsBody;
   const sendSmsResponse = await sendSms(

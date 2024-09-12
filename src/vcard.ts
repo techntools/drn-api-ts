@@ -1,3 +1,6 @@
+/**
+ * exports the content of the built vcard
+ */
 export const vcard = `
 BEGIN:VCARD
 VERSION:3.0

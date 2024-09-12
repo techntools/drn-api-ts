@@ -1,3 +1,8 @@
+/**
+ * this is where environment variables are initialized and exported from
+ * for the convenience of knowing all environment variables are set
+ */
+
 const errors: string[] = [];
 
 if (!process.env.APP_PORT) {

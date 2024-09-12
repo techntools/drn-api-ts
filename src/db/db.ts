@@ -10,6 +10,9 @@ import {
 } from "./db.model";
 import zzz, { and, ZzzResponse } from "zzzql";
 
+/**
+ * zzzql pass through to init the mysql2 db pool
+ */
 zzz.init({
   host: DB_HOST,
   user: DB_USER,
@@ -17,7 +20,13 @@ zzz.init({
   database: DB_NAME,
 });
 
-const getBrands = async (names: string[] | undefined) => {
+/**
+ * query database for brands in {@link BRANDS_TABLE} with filters
+ *
+ * @param {string[] | undefined} names brand names
+ * @returns {DbResponse} brand data or errors
+ */
+const getBrands = async (names: string[] | undefined): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       select: {
@@ -35,11 +44,19 @@ const getBrands = async (names: string[] | undefined) => {
   }
 };
 
+/**
+ * get disc molds from the database table {@link DISCS_TABLE} with filters
+ *
+ * @param {string[] | undefined} names disc mold names
+ * @param {number[] | undefined} brandIds brand ids
+ * @param {string[] | undefined} brandNames brand names
+ * @returns {Promise<DbResponse>} disc mold data or errors
+ */
 const getDiscs = async (
   names: string[] | undefined,
   brandIds: number[] | undefined,
   brandNames: string[] | undefined
-) => {
+): Promise<DbResponse> => {
   try {
     const results: ZzzResponse<QueryResult> = await zzz.q({
       select: {
@@ -67,6 +84,31 @@ const getDiscs = async (
   }
 };
 
+/**
+ * query database for inventory in {@link INVENTORY_TABLE}
+ *
+ * @param {string[] | undefined} courses
+ * @param {string[] | undefined} names
+ * @param {string[] | undefined} discs
+ * @param {string[] | undefined} phoneNumbers
+ * @param {string[] | undefined} bins
+ * @param {string[] | undefined} dateFounds
+ * @param {string[] | undefined} dateTexteds
+ * @param {string[] | undefined} dateClaimeds
+ * @param {string[] | undefined} statuss
+ * @param {string[] | undefined} commentss
+ * @param {string[] | undefined} colors
+ * @param {string[] | undefined} claimBys
+ * @param {string[] | undefined} brands
+ * @param {string[] | undefined} dateSolds
+ * @param {number[] | undefined} reminderTextSents
+ * @param {string[] | undefined} topImages
+ * @param {string[] | undefined} bottomImages
+ * @param {string[] | undefined} deleted
+ * @param {number[] | undefined} ids
+ * @param {number[] | undefined} dateOfReminderTexts
+ * @returns {Promise<DbResponse>} inventory data or errors
+ */
 const getInventory = async (
   courses: string[] | undefined,
   names: string[] | undefined,
@@ -148,6 +190,12 @@ const getInventory = async (
   }
 };
 
+/**
+ * perform insert on database to add to {@link INVENTORY_TABLE} table
+ *
+ * @param attributes
+ * @returns
+ */
 const postInventory = async (attributes: {
   course: string;
   name: string;
@@ -174,6 +222,13 @@ const postInventory = async (attributes: {
   }
 };
 
+/**
+ * patch a record in {@link INVENTORY_TABLE}
+ *
+ * @param {number} id record id
+ * @param {object} attributes object mapping database fields to values
+ * @returns {Promise<DbResponse>}
+ */
 const patchInventory = async (
   id: number,
   attributes: {
@@ -186,6 +241,7 @@ const patchInventory = async (
     dateFound?: string;
     color?: string;
     brand?: string;
+    dateTexted?: string;
   }
 ): Promise<DbResponse> => {
   try {
@@ -218,6 +274,22 @@ const patchInventory = async (
   }
 };
 
+/**
+ * get courses from {@link COURSES_TABLE} with params as filters
+ *
+ * @param {string[] | undefined} orgCode
+ * @param {number[] | undefined} activeForLostAndFound
+ * @param {string[] | undefined} courseName
+ * @param {string[] | undefined} state
+ * @param {string[] | undefined} city
+ * @param {string[] | undefined} shortCode
+ * @param {string[] | undefined} createdAt
+ * @param {string[] | undefined} updatedAt
+ * @param {string[] | undefined} shortLink
+ * @param {string[] | undefined} link
+ * @param {string[] | undefined} udiscLeagueURL
+ * @returns
+ */
 const getCourses = async (
   orgCode: string[] | undefined,
   activeForLostAndFound: number[] | undefined,
@@ -270,6 +342,11 @@ const getCourses = async (
   }
 };
 
+/**
+ * health checks connection to database with simple SELECT 1 query
+ *
+ * @returns {Promise<DbResponse>}
+ */
 export const healthCheck = async (): Promise<DbResponse> => {
   try {
     const pool = zzz.pool();
@@ -287,6 +364,12 @@ export const healthCheck = async (): Promise<DbResponse> => {
   }
 };
 
+/**
+ * upserts phone opt in record in {@link PHONE_OPT_IN_TABLE}
+ *
+ * @param {{id: string, optIn: 0 | 1}} param0 object with id and optIn value
+ * @returns
+ */
 const putPhoneOptIn = async ({
   id,
   optIn,
@@ -311,6 +394,13 @@ const putPhoneOptIn = async ({
   }
 };
 
+/**
+ * get list of phone opt ins from {@link PHONE_OPT_IN_TABLE}
+ *
+ * @param {string[] | undefined} phones e164 formatted phone numbers
+ * @param {(0 | 1)[]} smsConsents 0 1 for smsConsent out or in
+ * @returns {Promise<DbResponse>}
+ */
 const getPhoneOptIns = async (
   phones: string[] | undefined,
   smsConsents: (0 | 1)[] | undefined

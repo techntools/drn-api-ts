@@ -1,5 +1,14 @@
 import { AUTH_ISSUER } from "./env";
 
+/**
+ * handle extracting the org_code from the request auth jwt claims
+ * if not found or invalid sends an error to the client and returns null
+ * else returns the users org_code
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {string | null} `string` if userCode is in auth claim | `null` if not valid and error response sent
+ */
 export const handleOrgCode = (req, res): string | null => {
   const userOrgCodeRaw = req.auth?.payload?.org_code;
   if (typeof userOrgCodeRaw !== "string" || !userOrgCodeRaw) {
@@ -18,9 +27,15 @@ export const handleOrgCode = (req, res): string | null => {
   return userOrgCode;
 };
 
+/**
+ * middleware placed on routes to enforce user org_code claim
+ *
+ * @param {Promise<string | null>} getOrgCode function to get the orgCode to compare against
+ * @returns
+ */
 export const requireOrgAuth = (
   getOrgCode: (request, response) => Promise<string | null>
-) => {
+): ((req: any, res: any, next: any) => Promise<void>) => {
   return async (req, res, next) => {
     if (allowClientCredentialsGrantType(req)) {
       next();
@@ -41,6 +56,13 @@ export const requireOrgAuth = (
   };
 };
 
+/**
+ * middleware to allow auth tokens authenticated directly with the oauth provider
+ * using client_credentials
+ *
+ * @param {Request} req express request
+ * @returns {boolean}
+ */
 const allowClientCredentialsGrantType = (req): boolean => {
   const grantType = req.auth?.payload?.gty ?? null;
   if (!Array.isArray(grantType) || !grantType.includes("client_credentials")) {

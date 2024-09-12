@@ -6,6 +6,12 @@ import colorName from "color-namer";
 
 const imgAnnotator = new ImageAnnotatorClient({ credentials });
 
+/**
+ * use {@link imgAnnotator} to get google vision data for a base64 image
+ *
+ * @param {string} img base64 image
+ * @returns `{data: image_detection_data}` | `{errors[]}`
+ */
 const getImageText = async (
   img: string
 ): Promise<TResponse<ImageDetectionData>> => {

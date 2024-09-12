@@ -15,12 +15,16 @@ import {
 } from "../sms/sms.service";
 
 /**
- * get inventory
- * @param req
- * @param res
- * @returns
+ * handle request to get /inventory send response of inventory data
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
  */
-export const getInventory = async (req: Request, res: Response) => {
+export const getInventory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const query = req.query as GetInventoryQuery;
   const dbResponse = await db.getInventory(
     query.course,
@@ -82,7 +86,17 @@ export const getInventory = async (req: Request, res: Response) => {
   res.send(response);
 };
 
-export const postInventory = async (req: Request, res: Response) => {
+/**
+ * handle request to post new inventory item
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
+ */
+export const postInventory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const body = req.body as PostInventoryBody;
   const orgCode = handleOrgCode(req, res);
   if (orgCode === null) {
@@ -115,12 +129,29 @@ export const postInventory = async (req: Request, res: Response) => {
       body.data.attributes.phoneNumber
     );
     if (optInStatus === null) {
-      await sendSms(body.data.attributes.phoneNumber, optInMessage);
+      const smsResponse = await sendSms(
+        body.data.attributes.phoneNumber,
+        optInMessage
+      );
+      if (!smsResponse) {
+        await db.patchInventory(dbResponse.data.insertId, {
+          dateTexted: new Date().toISOString().split("T")[0],
+        });
+      }
     } else if (optInStatus === 1) {
-      await sendSms(
+      const smsResponse = await sendSms(
         body.data.attributes.phoneNumber,
         formatClaimInventoryMessage(unclaimedData.length)
       );
+      if (!smsResponse) {
+        await db.patchInventory(dbResponse.data.insertId, {
+          dateTexted: new Date().toISOString().split("T")[0],
+        });
+      }
+    } else {
+      await db.patchInventory(dbResponse.data.insertId, {
+        dateTexted: new Date().toISOString().split("T")[0],
+      });
     }
   }
 
@@ -129,7 +160,17 @@ export const postInventory = async (req: Request, res: Response) => {
   });
 };
 
-export const patchInventory = async (req: Request, res: Response) => {
+/**
+ * handle request to patch inventory
+ *
+ * @param {Request} req express request
+ * @param {Response} res express response
+ * @returns {Promise<void>} void promise
+ */
+export const patchInventory = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const body = req.body as PatchInventoryBody;
   const { itemId } = req.params;
   if (typeof itemId !== "number") {
