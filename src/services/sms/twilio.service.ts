@@ -25,7 +25,7 @@ export const sendSms = async (
       body: messageBody,
       from: TWILIO_SEND_FROM,
       to: toPhoneNumber,
-      shortenUrls: true,
+      // shortenUrls: true,
       messagingServiceSid: TWILIO_MESSAGING_SID,
     });
     console.log(`messageInstance: ${JSON.stringify(messageInstance)}`);

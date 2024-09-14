@@ -1726,9 +1726,9 @@ zzzql@1.1.0:
   resolved "https://registry.npmjs.org/zzzql/-/zzzql-1.1.0.tgz"
   integrity sha512-T3Y2oi/qX3rhREAM4GUSd7AtAeK37BzIj9/+1To1Hkxr0UymoqI1hlldGk8DdbHTIofzz3NrXjrORhb9RJscGQ==
 
-zzzql@1.1.8:
-  version "1.1.8"
-  resolved "https://registry.npmjs.org/zzzql/-/zzzql-1.1.8.tgz"
-  integrity sha512-YOhDdEHVTtNMoUR5BMfAH4YdGVNz5A3X36mkkaOGZ0KfyyUuxoWyq6YkA+8xJm10rXZWAFkwqZTdlrRUI0hdjg==
+zzzql@1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/zzzql/-/zzzql-1.2.2.tgz#2a358f62207a17b818b25d24889b645c50c175d2"
+  integrity sha512-xVPLpk+13LW2Txthw5fOrThMiMRTUJdAQWSH5yc+hE5gWOKHxnJ9427do4isGHVZzrcQH0O461Ju0lpgiElclA==
   dependencies:
     zzzql "1.1.0"

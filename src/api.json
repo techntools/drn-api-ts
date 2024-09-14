@@ -79,7 +79,12 @@
             "in": "query",
             "schema": {
               "type": "array",
-              "items": { "type": "string", "format": "date" }
+              "items": {
+                "oneOf": [
+                  { "type": "string", "format": "date" },
+                  { "type": "string", "enum": ["NULL"] }
+                ]
+              }
             }
           },
           {
@@ -87,7 +92,12 @@
             "in": "query",
             "schema": {
               "type": "array",
-              "items": { "type": "string", "format": "date" }
+              "items": {
+                "oneOf": [
+                  { "type": "string", "format": "date" },
+                  { "type": "string", "enum": ["NULL"] }
+                ]
+              }
             }
           },
           {
@@ -769,7 +779,8 @@
           "CLAIMED",
           "SOLD",
           "SOLD_OFFLINE",
-          "SURRENDERED"
+          "SURRENDERED",
+          ""
         ]
       },
       "ZeroOrOne": {

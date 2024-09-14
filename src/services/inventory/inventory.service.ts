@@ -26,6 +26,12 @@ export const getInventory = async (
   res: Response
 ): Promise<void> => {
   const query = req.query as GetInventoryQuery;
+  query.dateTexted = query.dateTexted?.map((e) => {
+    return e === "NULL" ? null : e;
+  });
+  query.dateOfReminderText = query.dateTexted?.map((e) => {
+    return e === "NULL" ? null : e;
+  });
   const dbResponse = await db.getInventory(
     query.course,
     query.name,
@@ -88,6 +94,7 @@ export const getInventory = async (
 
 /**
  * handle request to post new inventory item
+ * handles text immediately if textImmediately is in the payload
  *
  * @param {Request} req express request
  * @param {Response} res express response
@@ -121,38 +128,39 @@ export const postInventory = async (
     return;
   }
 
+  const optInStatus = await smsGetOptInStatus(body.data.attributes.phoneNumber);
   if (textImmediately) {
     const unclaimedData = await smsGetCurrentUnclaimedInventory(
       body.data.attributes.phoneNumber
     );
-    const optInStatus = await smsGetOptInStatus(
-      body.data.attributes.phoneNumber
-    );
+    let setDateTexted = false;
     if (optInStatus === null) {
+      // request opt in
       const smsResponse = await sendSms(
         body.data.attributes.phoneNumber,
         optInMessage
       );
-      if (!smsResponse) {
-        await db.patchInventory(dbResponse.data.insertId, {
-          dateTexted: new Date().toISOString().split("T")[0],
-        });
-      }
+      setDateTexted = !smsResponse === true;
     } else if (optInStatus === 1) {
+      // user is opted in send text
       const smsResponse = await sendSms(
         body.data.attributes.phoneNumber,
         formatClaimInventoryMessage(unclaimedData.length)
       );
-      if (!smsResponse) {
-        await db.patchInventory(dbResponse.data.insertId, {
-          dateTexted: new Date().toISOString().split("T")[0],
-        });
-      }
+      setDateTexted = !smsResponse === true;
     } else {
+      // phone is opted out
+      setDateTexted = true;
+    }
+    if (setDateTexted) {
       await db.patchInventory(dbResponse.data.insertId, {
         dateTexted: new Date().toISOString().split("T")[0],
       });
     }
+  } else if (optInStatus === 0) {
+    await db.patchInventory(dbResponse.data.insertId, {
+      dateTexted: new Date().toISOString().split("T")[0],
+    });
   }
 
   res.send({

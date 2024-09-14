@@ -22,7 +22,6 @@ import {
   putPhoneOptIn,
 } from "./services/sms/sms.service";
 import bodyParser from "body-parser";
-import { sendVCard } from "./services/sms/twilio.service";
 import { vcard } from "./vcard";
 
 const app = express();
