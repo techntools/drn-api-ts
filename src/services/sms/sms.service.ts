@@ -242,13 +242,64 @@ export const smsGetCurrentUnclaimedInventory = async (
  */
 export const postSms = async (request: Request, response: Response) => {
   const postSmsRequestBody = request.body as PostSmsBody;
-  const sendSmsResponse = await sendSms(
-    postSmsRequestBody.data.phone,
-    postSmsRequestBody.data.message
-  );
-  if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
-    response.status(500).send("Error sending sms");
-    return;
+
+  if (postSmsRequestBody.data.initialText) {
+    const optInStatus = await smsGetOptInStatus(postSmsRequestBody.data.phone);
+    {
+      const unclaimedData = await smsGetCurrentUnclaimedInventory(
+        postSmsRequestBody.data.phone
+      );
+      let setDateTexted = false;
+      if (optInStatus === null) {
+        // request opt in
+        const smsResponse = await sendSms(
+          postSmsRequestBody.data.phone,
+          optInMessage
+        );
+        setDateTexted = !smsResponse === true;
+      } else if (optInStatus === 1) {
+        // user is opted in send text
+        const sendSmsResponse = await sendSms(
+          postSmsRequestBody.data.phone,
+          postSmsRequestBody.data.message
+        );
+        setDateTexted = !sendSmsResponse === true;
+        if (
+          typeof sendSmsResponse === "object" &&
+          "errors" in sendSmsResponse
+        ) {
+          response.status(500).send("Error sending sms");
+          return;
+        }
+      } else {
+        // phone is opted out
+        setDateTexted = true;
+      }
+      if (setDateTexted) {
+        await db.patchInventory(postSmsRequestBody.data.discId, {
+          dateTexted: new Date().toISOString().split("T")[0],
+        });
+      }
+    }
+  } else {
+    // send the text
+    const sendSmsResponse = await sendSms(
+      postSmsRequestBody.data.phone,
+      postSmsRequestBody.data.message
+    );
+    if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
+      response.status(500).send("Error sending sms");
+      return;
+    }
+    // Log the custom SMS
+    await db.insertSmsLog({
+      discId: postSmsRequestBody.data.discId,
+      message: postSmsRequestBody.data.message,
+      sentBy: postSmsRequestBody.data.userId,
+      recipientPhone: postSmsRequestBody.data.phone,
+      sentAt: new Date().toISOString(),
+    });
   }
+
   response.status(200).send("Success");
 };
