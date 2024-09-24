@@ -426,6 +426,42 @@ const getPhoneOptIns = async (
   }
 };
 
+/**
+ * Insert a record into the sms_logs table
+ *
+ * @param {object} logEntry
+ * @returns {Promise<DbResponse>}
+ */
+const insertSmsLog = async (logEntry: {
+  discId: number;
+  message: string;
+  sentBy: string;
+  recipientPhone: string;
+  sentAt: string;
+}): Promise<DbResponse> => {
+  try {
+    const results: ZzzResponse<QueryResult> = await zzz.q({
+      insert: {
+        table: "sms_logs", // Make sure this matches your actual table name
+        values: {
+          disc_id: logEntry.discId,
+          message: logEntry.message,
+          sent_by: logEntry.sentBy,
+          recipient_phone: logEntry.recipientPhone,
+          sent_at: logEntry.sentAt,
+        },
+      },
+    });
+    if ("error" in results) {
+      throw new Error(JSON.stringify(results.error));
+    }
+    return { data: results };
+  } catch (e) {
+    console.error(e, " error from database query (insertSmsLog)");
+    return { errors: [{ code: "", message: "" }] };
+  }
+};
+
 export default {
   getBrands,
   getDiscs,
@@ -435,4 +471,5 @@ export default {
   getCourses,
   getPhoneOptIns,
   putPhoneOptIn,
+  insertSmsLog,
 };

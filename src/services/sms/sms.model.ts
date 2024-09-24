@@ -27,6 +27,9 @@ export type PostSmsBody = {
   data: {
     phone: string;
     message: string;
+    initialText: boolean;
+    discId: number;
+    userId: string;
   };
 };
 

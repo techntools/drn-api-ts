@@ -732,10 +732,16 @@
           "data": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["phone", "message"],
+            "required": ["phone", "message", "initialText", "discId", "userId"],
             "properties": {
               "phone": { "type": "string" },
-              "message": { "type": "string" }
+              "message": { "type": "string" },
+              "initialText": {
+                "$ref": "#/components/schemas/ZeroOrOne",
+                "description": "Pass initialText=1 to send the initial text and store dateText if user is opted in; send opt in request if user is not opted in or out."
+              },
+              "discId": { "type": "number" },
+              "userId": { "type": "string" }
             }
           }
         }
