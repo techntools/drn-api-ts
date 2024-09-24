@@ -1413,6 +1413,18 @@
           },
           "word": {
             "type": "string"
+          },
+          "category": {
+              "type": "array",
+              "items": {
+                  "type": "string"
+              }
+          },
+          "matchedTo": {
+              "type": "array",
+              "items": {
+                  "type": "string"
+              }
           }
         }
       },
