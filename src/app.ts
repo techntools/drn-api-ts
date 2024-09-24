@@ -13,7 +13,7 @@ import { postImageText } from "./services/ai/ai.service";
 import { getBrands } from "./services/brands/brands.service";
 const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
-import { getDiscs } from "./services/discs/discs.service";
+import disc from "./services/discs/controller";
 import { requireOrgAuth } from "./middleware";
 import {
   getPhoneOptIns,
@@ -23,6 +23,9 @@ import {
 } from "./services/sms/sms.service";
 import bodyParser from "body-parser";
 import { vcard } from "./vcard";
+
+import config from "./config";
+import store from "./store";
 
 const app = express();
 
@@ -77,7 +80,7 @@ app.get("/health-check", async (_req, res) => {
   res.send("healthy");
 });
 
-app.get("/discs", ...apiSpecMiddleware, getDiscs);
+app.get("/discs", ...apiSpecMiddleware, disc.findAll);
 
 app.get("/brands", ...apiSpecMiddleware, getBrands);
 
@@ -146,6 +149,8 @@ app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
 app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
 app.post("/sms", requireLogin, ...apiSpecMiddleware, postSms);
 
-app.listen(APP_PORT, () => {
+app.listen(APP_PORT, async () => {
+  await config.init()
+  await store.init()
   return console.log(`Server listening @ http://localhost:${APP_PORT}`);
 });

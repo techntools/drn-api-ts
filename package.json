@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@google-cloud/vision": "^4.3.0",
+    "class-validator": "^0.14.1",
     "color-namer": "^1.4.0",
     "cors": "^2.8.5",
     "express": "^4.20.0",
@@ -27,6 +28,7 @@
     "express-openapi-validator": "^5.2.0",
     "fuse.js": "^7.0.0",
     "mysql2": "^3.10.3",
+    "sequelize-typescript": "^2.1.6",
     "twilio": "^5.2.2",
     "vcards-js": "^2.10.0",
     "zzzql": "1.2.2"
