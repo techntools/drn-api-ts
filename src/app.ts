@@ -8,7 +8,7 @@ import {
 } from "./services/inventory/inventory.service";
 import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
-import { getCourses } from "./services/courses/courses.service";
+import course from "./services/courses/controller";
 import { postImageText } from "./services/ai/ai.service";
 import brand from "./services/brands/controller";
 const { auth } = require("express-oauth2-jwt-bearer");
@@ -136,7 +136,7 @@ app.patch(
   patchInventory
 );
 
-app.get("/courses", ...apiSpecMiddleware, getCourses);
+app.get("/courses", ...apiSpecMiddleware, course.findAll);
 
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
