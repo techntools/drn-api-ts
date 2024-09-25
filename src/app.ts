@@ -15,6 +15,7 @@ const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
 import disc from "./services/discs/controller";
 import { requireOrgAuth } from "./middleware";
+import sms from "./services/sms/controller";
 import {
   getPhoneOptIns,
   handleTwilioSms,
@@ -140,7 +141,7 @@ app.get("/courses", ...apiSpecMiddleware, course.findAll);
 
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
-app.get("/phone-opt-ins", getPhoneOptIns);
+app.get("/phone-opt-ins", sms.findAllPhoneOptIns);
 app.post("/phone-opt-ins/twilio", handleTwilioSms);
 app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
   res.setHeader("Content-Type", "text/vcard");
