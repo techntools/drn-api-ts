@@ -4,8 +4,8 @@ import brandService from './service'
 
 
 export class BrandController {
-    findAll = async (_: Request, res: Response) => {
-        const result = await brandService.findAll()
+    findAll = async (req: Request, res: Response) => {
+        const result = await brandService.findAll(req.query.name as string[])
         res.send({
             data: result.map(d => ({
                 type: 'brand',
