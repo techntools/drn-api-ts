@@ -10,7 +10,7 @@ import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
 import { getCourses } from "./services/courses/courses.service";
 import { postImageText } from "./services/ai/ai.service";
-import { getBrands } from "./services/brands/brands.service";
+import brand from "./services/brands/controller";
 const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
 import disc from "./services/discs/controller";
@@ -82,7 +82,7 @@ app.get("/health-check", async (_req, res) => {
 
 app.get("/discs", ...apiSpecMiddleware, disc.findAll);
 
-app.get("/brands", ...apiSpecMiddleware, getBrands);
+app.get("/brands", ...apiSpecMiddleware, brand.findAll);
 
 app.get("/inventory", ...apiSpecMiddleware, getInventory);
 app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
