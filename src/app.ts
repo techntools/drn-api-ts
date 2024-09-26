@@ -29,6 +29,8 @@ import { vcard } from "./vcard";
 import config from "./config";
 import store from "./store";
 
+import './lib'
+
 const app = express();
 
 app.use(express.json({ limit: "5mb" }));
@@ -87,7 +89,7 @@ app.get("/discs", ...apiSpecMiddleware, disc.findAll);
 app.get("/brands", ...apiSpecMiddleware, brand.findAll);
 
 app.get("/inventory", ...apiSpecMiddleware, inventory.findAll);
-app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
+app.post("/inventory", requireLogin, ...apiSpecMiddleware, inventory.create);
 app.patch(
   "/inventory/:itemId",
   requireLogin,

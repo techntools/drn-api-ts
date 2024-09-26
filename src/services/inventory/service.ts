@@ -1,4 +1,6 @@
-import Inventory from './models/inventory'
+import { Op } from 'sequelize'
+
+import Inventory, { InventoryData } from './models/inventory'
 
 
 export class InventoryService {
@@ -8,6 +10,20 @@ export class InventoryService {
             where,
             raw: true,
             nest: true
+        })
+    }
+
+    create = async (data: InventoryData) => {
+        return Inventory.create(data)
+    }
+
+    update = async (id: number, data: Partial<InventoryData>) => {
+        return Inventory.update(data, { where: { id } })
+    }
+
+    getUnclaimedInventory = async (phoneNumber: string) => {
+        return Inventory.findAll({
+            where: { phoneNumber: { [Op.like]: '%' + phoneNumber }, status: ['UNCLAIMED', 'NEW'] }
         })
     }
 }
