@@ -1,6 +1,7 @@
 import express from "express";
 import { APP_PORT, APP_CORS, AUTH_ISSUER, AUTH_AUDIENCE } from "./env";
 import cors from "cors";
+import inventory from './services/inventory/controller'
 import {
   getInventory,
   patchInventory,
@@ -85,7 +86,7 @@ app.get("/discs", ...apiSpecMiddleware, disc.findAll);
 
 app.get("/brands", ...apiSpecMiddleware, brand.findAll);
 
-app.get("/inventory", ...apiSpecMiddleware, getInventory);
+app.get("/inventory", ...apiSpecMiddleware, inventory.findAll);
 app.post("/inventory", requireLogin, ...apiSpecMiddleware, postInventory);
 app.patch(
   "/inventory/:itemId",
