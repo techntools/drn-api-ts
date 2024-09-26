@@ -10,7 +10,7 @@ export default class PhoneOptIn extends Model {
     id: string
 
     @Column
-    sms_consent: string
+    sms_consent: number
 }
 
 

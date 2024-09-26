@@ -221,6 +221,15 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Forbidden to perform this action",
+            "content": {
+              "application/json": {
+                "schema": {
+                }
+              }
+            }
           }
         }
       }
@@ -1033,6 +1042,7 @@
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
+                  "id",
                   "course",
                   "name",
                   "disc",
@@ -1041,9 +1051,14 @@
                   "comments",
                   "dateFound",
                   "color",
-                  "brand"
+                  "brand",
+                  "orgCode"
                 ],
                 "properties": {
+                  "id": {
+                    "type": "integer",
+                    "nullable": false
+                  },
                   "course": {
                     "type": "string",
                     "nullable": true
@@ -1111,6 +1126,10 @@
                   "bottomImage": {
                     "type": "string",
                     "nullable": true
+                  },
+                  "orgCode": {
+                    "type": "string",
+                    "nullable": false
                   }
                 }
               }
