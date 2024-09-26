@@ -5,7 +5,7 @@ import Inventory, { InventoryData } from './models/inventory'
 
 export class InventoryService {
     findAll = async (query: {[key: string]: string[]}) => {
-        const where = query
+        const where = { ...query, deleted: 0 }
         return Inventory.findAll({
             where,
             raw: true,
@@ -23,7 +23,11 @@ export class InventoryService {
 
     getUnclaimedInventory = async (phoneNumber: string) => {
         return Inventory.findAll({
-            where: { phoneNumber: { [Op.like]: '%' + phoneNumber }, status: ['UNCLAIMED', 'NEW'] }
+            where: {
+                phoneNumber: { [Op.like]: '%' + phoneNumber },
+                status: ['UNCLAIMED', 'NEW'],
+                deleted: 0
+            }
         })
     }
 }
