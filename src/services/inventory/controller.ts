@@ -8,6 +8,8 @@ import { formatClaimInventoryMessage, optInMessage } from "../sms/sms.model";
 
 
 export class InventoryController {
+    public service = inventoryService
+
     findAll = async (req: Request, res: Response) => {
         const result = await inventoryService.findAll(req.query as {[key: string]: string[]})
         res.send({
@@ -72,6 +74,11 @@ export class InventoryController {
                 id: newItem.id,
             },
         })
+    }
+
+    update = async (req: Request, res: Response) => {
+        await inventoryService.update(parseInt(req.params.itemId), req.body.data.attributes)
+        res.send({ data: { id: req.params.itemId, ...req.body.data, type: 'inventory' } })
     }
 }
 

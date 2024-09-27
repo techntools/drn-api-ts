@@ -93,51 +93,14 @@ app.post("/inventory", requireLogin, ...apiSpecMiddleware, inventory.create);
 app.patch(
   "/inventory/:itemId",
   requireLogin,
-  requireOrgAuth(async (req, res) => {
-    const itemId = Number(req.params?.itemId);
-    if (!itemId || isNaN(itemId)) {
-      res.status(400).send({
-        errors: [
-          { code: "no_inventory_item_id", message: "no itemId in path" },
-        ],
-      });
-      return null;
-    }
-    const dbResponse = await db.getInventory(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      [itemId],
-      undefined
-    );
-    if (
-      "errors" in dbResponse ||
-      !Array.isArray(dbResponse.data) ||
-      dbResponse.data.length > 1 ||
-      !dbResponse.data.every((d) => typeof d === "object" && "orgCode" in d)
-    ) {
-      res.status(500).send();
-      return null;
-    }
-    return (dbResponse.data[0] as { orgCode: string }).orgCode;
+  requireOrgAuth(async (req) => {
+    const item = await inventory.service.findById(parseInt(req.params.itemId))
+    if (item)
+        return item.orgCode
+    return null
   }),
   ...apiSpecMiddleware,
-  patchInventory
+  inventory.update
 );
 
 app.get("/courses", ...apiSpecMiddleware, course.findAll);
