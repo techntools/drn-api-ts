@@ -13,6 +13,10 @@ export class InventoryService {
         })
     }
 
+    findById = async (id: number) => {
+        return Inventory.findByPk(id)
+    }
+
     create = async (data: InventoryData) => {
         return Inventory.create(data)
     }
