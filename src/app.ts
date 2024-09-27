@@ -113,7 +113,7 @@ app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
   res.setHeader("Content-Type", "text/vcard");
   res.send(vcard);
 });
-app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, putPhoneOptIn);
+app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, sms.updatePhoneOptIn);
 app.post("/sms", requireLogin, ...apiSpecMiddleware, postSms);
 
 app.listen(APP_PORT, async () => {
