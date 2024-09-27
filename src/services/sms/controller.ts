@@ -14,6 +14,16 @@ export class SMSController {
             }))
         })
     }
+
+    updatePhoneOptIn = async (req: Request, res: Response) => {
+        await smsService.updatePhoneOptIn(
+            req.body.data.id,
+            {
+                sms_consent: req.body.data.attributes.smsConsent,
+            }
+        )
+        res.send(req.body)
+    }
 }
 
 

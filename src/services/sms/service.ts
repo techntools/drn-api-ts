@@ -1,6 +1,6 @@
 import { Op } from 'sequelize'
 
-import PhoneOptIn from './models/phone-opt-ins'
+import PhoneOptIn, { PhoneOptInData } from './models/phone-opt-ins'
 
 
 export class SMSService {
@@ -18,6 +18,10 @@ export class SMSService {
             raw: true,
             nest: true
         })
+    }
+
+    updatePhoneOptIn = async (id: string, data: Partial<PhoneOptInData>) => {
+        return PhoneOptIn.upsert({ ...data, id })
     }
 }
 
