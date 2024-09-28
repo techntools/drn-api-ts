@@ -591,7 +591,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object"
+                  "type": "object",
+                  "required": ["From", "Body"],
+                  "properties": {
+                      "From": { "type": "string", "example": "+8045938234" },
+                      "Body": { "type": "string", "example": "A message" }
+                  }
               }
             }
           }
