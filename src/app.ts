@@ -108,7 +108,7 @@ app.get("/courses", ...apiSpecMiddleware, course.findAll);
 app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
 
 app.get("/phone-opt-ins", sms.findAllPhoneOptIns);
-app.post("/phone-opt-ins/twilio", handleTwilioSms);
+app.post("/phone-opt-ins/twilio", ...apiSpecMiddleware, sms.handleTwilioSms);
 app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
   res.setHeader("Content-Type", "text/vcard");
   res.send(vcard);

@@ -28,6 +28,18 @@ export class EnvConfig {
     @IsArray()
     autoAttributes: string[]
 
+    @IsString()
+    twilioAuthToken: string
+
+    @IsString()
+    twilioSID: string
+
+    @IsString()
+    twilioSendFrom: string
+
+    @IsString()
+    twilioWebhookURL: string
+
     dbConfig: DatabaseConfig
 
     async init() {
@@ -38,6 +50,11 @@ export class EnvConfig {
             'createdAt',
             'updatedAt',
         ]
+
+        this.twilioAuthToken = process.env.TWILIO_AUTH_TOKEN,
+        this.twilioSID = process.env.TWILIO_SID,
+        this.twilioSendFrom = process.env.TWILIO_SEND_FROM,
+        this.twilioWebhookURL = process.env.TWILIO_WEBHOOK_URL,
 
         this.dbConfig = new DatabaseConfig
         this.dbConfig.dialect = process.env.DB_DIALECT as Dialect
