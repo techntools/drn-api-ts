@@ -114,7 +114,7 @@ app.get("/phone-opt-ins/twilio/vcf", async (req, res) => {
   res.send(vcard);
 });
 app.put("/phone-opt-ins", requireLogin, ...apiSpecMiddleware, sms.updatePhoneOptIn);
-app.post("/sms", requireLogin, ...apiSpecMiddleware, postSms);
+app.post("/sms", requireLogin, ...apiSpecMiddleware, sms.postSms);
 
 app.listen(APP_PORT, async () => {
   await config.init()
