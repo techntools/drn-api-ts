@@ -1,12 +1,20 @@
 import { Request, Response } from 'express'
+import twilio, { twiml } from "twilio";
 
 import smsService from './service'
 import lib from './lib'
 
-import { sendSms } from "../sms/twilio.service";
-import { optInMessage } from "../sms/sms.model";
+import { sendSms, sendVCard } from "../sms/twilio.service";
+import {
+  OPT_IN_KEYWORDS,
+  OPT_OUT_KEYWORDS,
+  formatClaimInventoryMessage,
+  optInMessage,
+} from "./sms.model";
 
 import inventoryLib from '../inventory/lib'
+
+import config from '../../config'
 
 
 export class SMSController {
@@ -92,6 +100,74 @@ export class SMSController {
         }
 
         res.send("Success")
+    }
+
+    handleTwilioSms = async (req: Request, res: Response) => {
+        try {
+            const isTwilio = twilio.validateRequest(
+                config.twilioAuthToken,
+                req.headers["x-twilio-signature"] as string,
+                config.twilioWebhookURL,
+                req.body
+            )
+
+            if (!isTwilio) {
+                console.error("!isTwilio on twilio webhook post")
+                return res.status(403).send()
+            }
+
+            const phoneNumber = req.body.From
+            const message = req.body.Body
+
+            let responseMessage: string = "Thanks for the message - Disc Rescue Network"
+
+            const testMessage = message.trim().toLowerCase()
+
+            if (OPT_OUT_KEYWORDS.includes(testMessage)) {
+                await smsService.updatePhoneOptIn(phoneNumber, {
+                    sms_consent: 0,
+                })
+
+                return res.status(418).send()
+            } else {
+                const optInStatus = await lib.getOptInStatus(phoneNumber)
+                if (OPT_IN_KEYWORDS.includes(testMessage)) {
+                    if (optInStatus && optInStatus.sms_consent === 0) {
+                        await smsService.updatePhoneOptIn(phoneNumber, {
+                            sms_consent: 1,
+                        })
+
+                        await sendVCard(
+                            phoneNumber,
+                            "DRN: Save our contact to make sure you get all the latest updates from Disc Rescue Network!"
+                        )
+                    }
+                } else {
+                    if (!optInStatus) {
+                        await smsService.updatePhoneOptIn(phoneNumber, {
+                            sms_consent: 0,
+                        })
+
+                        await sendSms(phoneNumber, optInMessage)
+                        return res.status(418).send()
+                    } else if (optInStatus.sms_consent === 0) {
+                        return res.status(418).send()
+                    }
+                }
+            }
+
+            const currentInventoryForUser = await inventoryLib.getUnclaimedInventory(
+                phoneNumber
+            )
+            responseMessage = formatClaimInventoryMessage(currentInventoryForUser.length)
+
+            const twilioResponse = new twiml.MessagingResponse()
+            twilioResponse.message(responseMessage)
+            res.type("text/xml").status(200).send(twilioResponse.toString())
+        } catch (e) {
+            console.error("Error on twilio opt in:", e)
+            res.status(500).send()
+        }
     }
 }
 
