@@ -23,6 +23,7 @@ import {
   postSms,
   putPhoneOptIn,
 } from "./services/sms/sms.service";
+import web from "./services/web/controller";
 import bodyParser from "body-parser";
 import { vcard } from "./vcard";
 
@@ -75,14 +76,7 @@ app.use(
   })
 );
 
-app.get("/health-check", async (_req, res) => {
-  const dbResponse = await healthCheck();
-  if ("errors" in dbResponse) {
-    res.status(500).send("sick");
-    return;
-  }
-  res.send("healthy");
-});
+app.get("/health-check", web.healthCheck);
 
 app.get("/discs", ...apiSpecMiddleware, disc.findAll);
 
