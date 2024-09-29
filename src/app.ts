@@ -10,7 +10,7 @@ import {
 import * as OpenApiValidator from "express-openapi-validator";
 import openApiSpec from "./api.json";
 import course from "./services/courses/controller";
-import { postImageText } from "./services/ai/ai.service";
+import ai from "./services/ai/controller";
 import brand from "./services/brands/controller";
 const { auth } = require("express-oauth2-jwt-bearer");
 import db, { healthCheck } from "./db/db";
@@ -105,7 +105,7 @@ app.patch(
 
 app.get("/courses", ...apiSpecMiddleware, course.findAll);
 
-app.post("/ai/image", requireLogin, ...apiSpecMiddleware, postImageText);
+app.post("/ai/image", requireLogin, ...apiSpecMiddleware, ai.extractImageText);
 
 app.get("/phone-opt-ins", sms.findAllPhoneOptIns);
 app.post("/phone-opt-ins/twilio", ...apiSpecMiddleware, sms.handleTwilioSms);
