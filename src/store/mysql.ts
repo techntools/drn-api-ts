@@ -4,10 +4,12 @@ import envConfig from '../config'
 
 
 export class MySQL {
+    public sequelize: Sequelize
+
     async init() {
         const { dialect, name, host, username, password } = envConfig.dbConfig
 
-        const sequelize = new Sequelize(
+        this.sequelize = new Sequelize(
             name,
             username,
             password,
@@ -18,12 +20,12 @@ export class MySQL {
             }
         )
 
-        sequelize.addModels([__dirname + '/../**/models/*.js'])
+        this.sequelize.addModels([__dirname + '/../**/models/*.js'])
 
         if (process.env.DB_SYNC)
-            sequelize.sync({ alter: true })
+            this.sequelize.sync({ alter: true })
 
-        return sequelize
+        return this.sequelize
     }
 }
 
