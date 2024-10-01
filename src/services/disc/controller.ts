@@ -16,10 +16,10 @@ export class DiscController extends AppController {
         return this
     }
 
-    findAll = async (_: Request, res: Response) => {
-        const result = await discService.findAll()
-        res.send({
-            data: result.map(d => ({
+    findAll = AppController.asyncHandler(
+        async (_: Request) => {
+            const result = await discService.findAll()
+            return result.map(d => ({
                 type: 'disc',
                 id: d.MoldID,
                 attributes: {
@@ -28,8 +28,8 @@ export class DiscController extends AppController {
                     BrandName: d.brand?.BrandName,
                 },
             }))
-        })
-    }
+        }
+    )
 }
 
 

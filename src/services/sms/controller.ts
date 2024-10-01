@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import twilio, { twiml } from 'twilio'
 
 import AppController from '../../lib/app-controller'
+import { Forbidden, InternalServerError } from '../../lib/error'
 
 import smsService from './service'
 import lib from './lib'
@@ -42,92 +43,96 @@ export class SMSController extends AppController {
         return this
     }
 
-    findAllPhoneOptIns = async (req: Request, res: Response) => {
-        const result = await smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
-        res.send({
-            data: result.map(r => ({
+    findAllPhoneOptIns = AppController.asyncHandler(
+        async (req: Request) => {
+            const result = await smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
+            return result.map(r => ({
                 type: 'phoneOptIn',
                 id: r.id,
                 attributes: { smsConsent: r.sms_consent },
             }))
-        })
-    }
+        }
+    )
 
-    updatePhoneOptIn = async (req: Request, res: Response) => {
-        await smsService.updatePhoneOptIn(
-            req.body.data.id,
-            {
-                sms_consent: req.body.data.attributes.smsConsent,
-            }
-        )
-        res.send(req.body)
-    }
+    updatePhoneOptIn = AppController.asyncHandler(
+        async (req: Request) => {
+            await smsService.updatePhoneOptIn(
+                req.body.data.id,
+                {
+                    sms_consent: req.body.data.attributes.smsConsent,
+                }
+            )
+            return req.body
+        }
+    )
 
-    postSms = async (req: Request, res: Response) => {
-        const postSmsRequestBody = req.body
-        if (postSmsRequestBody.data.initialText) {
-            const optInStatus = await lib.getOptInStatus(postSmsRequestBody.data.phone)
+    postSms = AppController.asyncHandler(
+        async (req: Request) => {
+            const postSmsRequestBody = req.body
+            if (postSmsRequestBody.data.initialText) {
+                const optInStatus = await lib.getOptInStatus(postSmsRequestBody.data.phone)
 
-            let setDateTexted = false
+                let setDateTexted = false
 
-            if (optInStatus === null) {
-                // request opt in
-                const smsResponse = await sendSms(
-                    postSmsRequestBody.data.phone,
-                    optInMessage
-                )
-                setDateTexted = !smsResponse === true
-            } else if (optInStatus.sms_consent === 1) {
-                // user is opted in, send text
+                if (optInStatus === null) {
+                    // request opt in
+                    const smsResponse = await sendSms(
+                        postSmsRequestBody.data.phone,
+                        optInMessage
+                    )
+                    setDateTexted = !smsResponse === true
+                } else if (optInStatus.sms_consent === 1) {
+                    // user is opted in, send text
+                    const sendSmsResponse = await sendSms(
+                        postSmsRequestBody.data.phone,
+                        postSmsRequestBody.data.message
+                    )
+
+                    setDateTexted = !sendSmsResponse === true
+
+                    if (
+                        typeof sendSmsResponse === "object" &&
+                        "errors" in sendSmsResponse
+                    ) {
+                        throw new InternalServerError('Error sending sms')
+                    }
+                } else {
+                    // phone is opted out
+                    setDateTexted = true
+                }
+
+                if (setDateTexted) {
+                    await inventoryLib.update(postSmsRequestBody.data.discId, {
+                        dateTexted: new Date(new Date().toISOString().split("T")[0]),
+                    })
+                }
+            } else {
+                // send the text
                 const sendSmsResponse = await sendSms(
                     postSmsRequestBody.data.phone,
                     postSmsRequestBody.data.message
                 )
 
-                setDateTexted = !sendSmsResponse === true
-
-                if (
-                    typeof sendSmsResponse === "object" &&
-                    "errors" in sendSmsResponse
-                ) {
-                    return res.status(500).send("Error sending sms")
+                if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
+                    throw new InternalServerError('Error sending sms')
                 }
-            } else {
-                // phone is opted out
-                setDateTexted = true
-            }
 
-            if (setDateTexted) {
-                await inventoryLib.update(postSmsRequestBody.data.discId, {
-                    dateTexted: new Date(new Date().toISOString().split("T")[0]),
+                // Log the custom SMS
+                await smsService.insertSmsLog({
+                    disc_id: postSmsRequestBody.data.discId,
+                    message: postSmsRequestBody.data.message,
+                    sent_by: postSmsRequestBody.data.userId,
+                    recipient_phone: postSmsRequestBody.data.phone,
+                    sent_at: new Date(),
                 })
             }
-        } else {
-            // send the text
-            const sendSmsResponse = await sendSms(
-                postSmsRequestBody.data.phone,
-                postSmsRequestBody.data.message
-            )
 
-            if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
-                return res.status(500).send("Error sending sms");
-            }
-
-            // Log the custom SMS
-            await smsService.insertSmsLog({
-                disc_id: postSmsRequestBody.data.discId,
-                message: postSmsRequestBody.data.message,
-                sent_by: postSmsRequestBody.data.userId,
-                recipient_phone: postSmsRequestBody.data.phone,
-                sent_at: new Date(),
-            })
+            return 'Successfully opted for SMS'
         }
+    )
 
-        res.send("Success")
-    }
-
-    handleTwilioSms = async (req: Request, res: Response) => {
-        try {
+    handleTwilioSms = AppController.asyncHandler(
+        async (req: Request) => {
             const isTwilio = twilio.validateRequest(
                 config.twilioAuthToken,
                 req.headers["x-twilio-signature"] as string,
@@ -135,10 +140,8 @@ export class SMSController extends AppController {
                 req.body
             )
 
-            if (!isTwilio) {
-                console.error("!isTwilio on twilio webhook post")
-                return res.status(403).send()
-            }
+            if (!isTwilio)
+                throw new Forbidden('Invalid twilio signature')
 
             const phoneNumber = req.body.From
             const message = req.body.Body
@@ -152,7 +155,7 @@ export class SMSController extends AppController {
                     sms_consent: 0,
                 })
 
-                return res.status(418).send()
+                return 'Successfully opted out of SMS'
             } else {
                 const optInStatus = await lib.getOptInStatus(phoneNumber)
                 if (OPT_IN_KEYWORDS.includes(testMessage)) {
@@ -173,9 +176,10 @@ export class SMSController extends AppController {
                         })
 
                         await sendSms(phoneNumber, optInMessage)
-                        return res.status(418).send()
+
+                        throw new Forbidden('You have not opted for SMS. Please check SMS to opt in.')
                     } else if (optInStatus.sms_consent === 0) {
-                        return res.status(418).send()
+                        throw new Forbidden('You have not opted for SMS')
                     }
                 }
             }
@@ -185,14 +189,10 @@ export class SMSController extends AppController {
             )
             responseMessage = formatClaimInventoryMessage(currentInventoryForUser.length)
 
-            const twilioResponse = new twiml.MessagingResponse()
-            twilioResponse.message(responseMessage)
-            res.type("text/xml").status(200).send(twilioResponse.toString())
-        } catch (e) {
-            console.error("Error on twilio opt in:", e)
-            res.status(500).send()
+            const twilioResponse = new twiml.MessagingResponse().message(responseMessage)
+            return { xml: twilioResponse.toString() }
         }
-    }
+    )
 }
 
 

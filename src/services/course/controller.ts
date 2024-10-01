@@ -16,18 +16,16 @@ export class CourseController extends AppController {
         return this
     }
 
-    findAll = async (req: Request, res: Response) => {
-        const result = await courseService.findAll(req.query as {[key: string]: string[]})
-        res.send({
-            data: result.map((r) => {
-                return {
-                    type: 'course',
-                    id: r.orgCode,
-                    attributes: r,
-                };
-            })
-        })
-    }
+    findAll = AppController.asyncHandler(
+        async (req: Request) => {
+            const result = await courseService.findAll(req.query as {[key: string]: string[]})
+            return result.map(r => ({
+                type: 'course',
+                id: r.orgCode,
+                attributes: r,
+            }))
+        }
+    )
 }
 
 

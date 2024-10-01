@@ -1,11 +1,14 @@
-import express from 'express'
+import express, { NextFunction } from 'express'
 import helmet from 'helmet'
 import logger from 'morgan'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import compression from 'compression'
 
-import * as OpenApiValidator from "express-openapi-validator"
+import { SuccessResponse, ResponseData } from '../lib/service-response'
+
+import defaultErrorHandler from './error'
+import storeErrorHandler from '../store/error'
 
 import course from '../services/course'
 import inventory from '../services/inventory'
@@ -15,7 +18,6 @@ import sms from '../services/sms'
 import ai from '../services/ai'
 
 import config from '../config'
-import openApiSpec from '../api.json'
 
 import healthCheck from './healthcheck'
 
@@ -48,22 +50,33 @@ export class Web {
         sms.init()
         ai.init()
 
-        /**
-         * Middleware that enforces in the {@link openApiSpec}
-         */
-        this.add(OpenApiValidator.middleware({
-            apiSpec: openApiSpec as any,
-            validateRequests: true,
-            validateResponses: true,
-            ignorePaths: /.*\/vcf$/
-        }))
-
         this.add(disc.router, disc.basePath)
         this.add(brand.router, brand.basePath)
         this.add(course.router, course.basePath)
         this.add(inventory.router, inventory.basePath)
         this.add(sms.router, sms.basePath)
         this.add(ai.router, ai.basePath)
+
+        this.add(storeErrorHandler)
+        this.add(defaultErrorHandler)
+
+        express.response.success = async function(dataOrPromise: Promise<ResponseData | undefined> | ResponseData, next: NextFunction) {
+            let result: ResponseData
+
+            if (dataOrPromise instanceof Promise) {
+                try {
+                    result = await dataOrPromise
+                } catch(err) {
+                    return next(err)
+                }
+            } else
+                result = dataOrPromise
+
+            if (typeof result === 'string')
+                return this.json(new SuccessResponse(undefined, result))
+
+            this.json(new SuccessResponse(result))
+        }
 
         return this
     }

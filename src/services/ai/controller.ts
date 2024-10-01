@@ -18,15 +18,11 @@ export class AIController extends AppController {
         return this
     }
 
-    extractImageText = async (req: Request, res: Response) => {
-        try {
-            const result = await aiService.extractImageText(req.body.data.image)
-            res.send(result)
-        } catch(err) {
-            console.log('Failed to extract image text')
-            res.status(500).send({ message: 'Failed to extract image text' })
+    extractImageText = AppController.asyncHandler(
+        async (req: Request) => {
+            return aiService.extractImageText(req.body.data.image)
         }
-    }
+    )
 }
 
 

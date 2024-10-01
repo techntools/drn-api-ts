@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 
 import AppController from '../../lib/app-controller'
+import { Forbidden } from '../../lib/error'
 
 import inventoryService from './service'
 
@@ -36,83 +37,86 @@ export class InventoryController extends AppController {
         return this
     }
 
-    findAll = async (req: Request, res: Response) => {
-        const result = await inventoryService.findAll(req.query as {[key: string]: string[]})
-        res.send({
-            data: result.map(d => ({
+    findAll = AppController.asyncHandler(
+        async (req: Request) => {
+            const result = await inventoryService.findAll(req.query as {[key: string]: string[]})
+            return result.map(d => ({
                 type: 'inventory',
                 id: d.id,
                 attributes: d,
             }))
-        })
-    }
-
-    findById = async (req: Request, res: Response) => {
-        const result = await inventoryService.findById(parseInt(req.params.itemId))
-        res.send(result)
-    }
-
-    create = async (req: Request, res: Response) => {
-        const orgCode = req.auth?.payload?.org_code
-        if (!orgCode)
-            return res.status(403).send({ code: 'MISSING_ORG_CODE', message: 'No org code' })
-
-        const body = req.body
-
-        const newItem = await inventoryService.create({
-            ...body.data.attributes,
-            orgCode
-        })
-
-        if (body.data.attributes.textImmediately) {
-            const unclaimedData = await inventoryService.getUnclaimedInventory(
-                body.data.attributes.phoneNumber
-            )
-
-            const optInStatus = await smslib.getOptInStatus(body.data.attributes.phoneNumber);
-
-            let setDateTexted = false
-            if (optInStatus === null) {
-                // request opt in
-                const smsResponse = await sendSms(
-                    body.data.attributes.phoneNumber,
-                    optInMessage
-                )
-                setDateTexted = !smsResponse === true
-            } else if (optInStatus.sms_consent === 1) {
-                // user is opted in, send text
-                const smsResponse = await sendSms(
-                    body.data.attributes.phoneNumber,
-                    formatClaimInventoryMessage(unclaimedData.length)
-                )
-                setDateTexted = !smsResponse === true
-            } else {
-                // phone is opted out
-                setDateTexted = true
-            }
-
-            if (setDateTexted) {
-                await inventoryService.update(newItem.id, {
-                    dateTexted: new Date(new Date().toISOString().split("T")[0]),
-                })
-            }
         }
+    )
 
-        res.send({
-            data: {
+    findById = AppController.asyncHandler(
+        async (req: Request) => {
+            return inventoryService.findById(parseInt(req.params.itemId))
+        }
+    )
+
+    create = AppController.asyncHandler(
+        async (req: Request) => {
+            const orgCode = req.auth?.payload?.org_code
+            if (!orgCode)
+                throw new Forbidden('No org code', 'MISSING_ORG_CODE')
+
+            const body = req.body
+
+            const newItem = await inventoryService.create({
+                ...body,
+                orgCode
+            })
+
+            if (body.textImmediately) {
+                const unclaimedData = await inventoryService.getUnclaimedInventory(
+                    body.phoneNumber
+                )
+
+                const optInStatus = await smslib.getOptInStatus(body.phoneNumber);
+
+                let setDateTexted = false
+                if (optInStatus === null) {
+                    // request opt in
+                    const smsResponse = await sendSms(
+                        body.phoneNumber,
+                        optInMessage
+                    )
+                    setDateTexted = !smsResponse === true
+                } else if (optInStatus.sms_consent === 1) {
+                    // user is opted in, send text
+                    const smsResponse = await sendSms(
+                        body.phoneNumber,
+                        formatClaimInventoryMessage(unclaimedData.length)
+                    )
+                    setDateTexted = !smsResponse === true
+                } else {
+                    // phone is opted out
+                    setDateTexted = true
+                }
+
+                if (setDateTexted) {
+                    await inventoryService.update(newItem.id, {
+                        dateTexted: new Date(new Date().toISOString().split("T")[0]),
+                    })
+                }
+            }
+
+            return {
                 attributes: newItem.dataValues,
                 type: 'inventory',
                 id: newItem.id,
-            },
-        })
-    }
+            }
+        }
+    )
 
-    update = async (req: Request, res: Response) => {
-        const itemId = parseInt(req.params.itemId)
+    update = AppController.asyncHandler(
+        async (req: Request) => {
+            const itemId = parseInt(req.params.itemId)
 
-        await inventoryService.update(itemId, req.body.data.attributes)
-        res.send({ data: { id: itemId, ...req.body.data, type: 'inventory' } })
-    }
+            await inventoryService.update(itemId, req.body)
+            return { id: itemId, ...req.body, type: 'inventory' }
+        }
+    )
 }
 
 

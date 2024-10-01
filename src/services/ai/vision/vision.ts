@@ -1,21 +1,19 @@
 import { ImageAnnotatorClient } from "@google-cloud/vision";
 import credentials from "./credentials.json";
-import { TResponse } from "../../../app.model";
 import { ImageDetectionData, TextData } from "./vision.model";
 import colorName from "color-namer";
 
 const imgAnnotator = new ImageAnnotatorClient({ credentials });
 
 /**
- * use {@link imgAnnotator} to get google vision data for a base64 image
+ * Use {@link imgAnnotator} to get google vision data for a base64 image
  *
  * @param {string} img base64 image
- * @returns `{data: image_detection_data}` | `{errors[]}`
+ * @returns `{ text, colors }`
  */
 const getImageText = async (
   img: string
-): Promise<TResponse<ImageDetectionData>> => {
-  try {
+): Promise<ImageDetectionData> => {
     const req = {
       image: {
         content: Buffer.from(img, "base64"),
@@ -65,11 +63,7 @@ const getImageText = async (
           };
         }
       );
-    return { data: { text, colors } };
-  } catch (e) {
-    console.error(e, "vision text error (getImageText)");
-    return { errors: [] };
-  }
+    return { text, colors }
 };
 
 export default {

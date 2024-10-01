@@ -35,11 +35,11 @@ export class AIService {
     }
 
     extractImageText = async (imageData: string) => {
-        var visionResponse: any = await vision.getImageText(imageData)
+        const visionResponse: any = await vision.getImageText(imageData)
 
         const brands = await brandService.findAll();
 
-        const words: { word: string }[] = visionResponse.data.text.words
+        const words: { word: string }[] = visionResponse.text.words
 
         const fuseOptions = {
             includeScore: true,
@@ -115,7 +115,7 @@ export class AIService {
             }
         })
 
-        return { data: visionResponse.data }
+        return visionResponse
     }
 }
 
