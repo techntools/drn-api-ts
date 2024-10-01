@@ -1,9 +1,21 @@
 import { Request, Response } from 'express'
 
+import AppController from '../../lib/app-controller'
+
 import discService from './service'
 
 
-export class DiscController {
+export class DiscController extends AppController {
+    init () {
+        this.basePath = '/discs'
+
+        discService.init()
+
+        this.router.get('', this.findAll)
+
+        return this
+    }
+
     findAll = async (_: Request, res: Response) => {
         const result = await discService.findAll()
         res.send({

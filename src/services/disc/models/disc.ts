@@ -1,6 +1,6 @@
 import { BelongsTo, ForeignKey, PrimaryKey, Column, Table, Model } from 'sequelize-typescript'
 
-import Brand from '../../brands/models/brand'
+import Brand from '../../brand/models/brand'
 
 
 @Table({

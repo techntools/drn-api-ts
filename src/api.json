@@ -581,7 +581,7 @@
         }
       }
     },
-    "/phone-opt-ins/twilio": {
+    "/sms/phone-opt-ins/twilio": {
       "post": {
         "tags": ["phone-opt-ins"],
         "summary": "Endpoint for twilio webhook on opt in/out",
@@ -615,7 +615,7 @@
         }
       }
     },
-    "/phone-opt-ins": {
+    "/sms/phone-opt-ins": {
       "get": {
         "tags": ["phone-opt-ins"],
         "summary": "Get phone opt-ins and filter by phone numbers in e.164 format",

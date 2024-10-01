@@ -1,8 +1,10 @@
-import mysql from '../../store/mysql'
+import { Request, Response } from 'express'
+
+import mysql from '../store/mysql'
 
 
-export class BrandService {
-    healthCheck = async () => {
+export default async function (_: Request, res: Response) {
+    try {
         const sequelize = mysql.sequelize
         const readConn = await sequelize.connectionManager.getConnection({ type: 'read' })
         if (!readConn)
@@ -13,8 +15,9 @@ export class BrandService {
             throw new Error('No write connection to database')
 
         await sequelize.query('SELECT 1')
+
+        res.send('healthy')
+    } catch(err) {
+        res.status(500).send('sick')
     }
 }
-
-
-export default new BrandService

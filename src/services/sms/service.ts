@@ -5,6 +5,10 @@ import SMSLogs, { SMSLogsData } from './models/sms-logs'
 
 
 export class SMSService {
+    init () {
+        return this
+    }
+
     findAllPhoneOptIns = async (query: {[key: string]: string[]}) => {
         const where: {} = {}
 

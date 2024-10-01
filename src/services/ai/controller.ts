@@ -1,9 +1,23 @@
 import { Request, Response } from 'express'
 
+import AppController from '../../lib/app-controller'
+
 import aiService from './service'
 
+import { requireLogin } from '../../web/middleware'
 
-export class DiscController {
+
+export class AIController extends AppController {
+    init () {
+        this.basePath = '/ai'
+
+        aiService.init()
+
+        this.router.post('/image', requireLogin, this.extractImageText)
+
+        return this
+    }
+
     extractImageText = async (req: Request, res: Response) => {
         try {
             const result = await aiService.extractImageText(req.body.data.image)
@@ -16,4 +30,4 @@ export class DiscController {
 }
 
 
-export default new DiscController
+export default new AIController

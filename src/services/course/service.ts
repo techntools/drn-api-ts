@@ -4,6 +4,10 @@ import Course from './models/course'
 
 
 export class CourseService {
+    init () {
+        return this
+    }
+
     findAll = async (query: {[key: string]: string[]}) => {
         const where: {} = {}
 

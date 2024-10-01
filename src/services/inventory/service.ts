@@ -4,6 +4,10 @@ import Inventory, { InventoryData } from './models/inventory'
 
 
 export class InventoryService {
+    init () {
+        return this
+    }
+
     findAll = async (query: {[key: string]: string[]}) => {
         const where = { ...query, deleted: 0 }
         return Inventory.findAll({

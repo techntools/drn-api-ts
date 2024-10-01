@@ -1,13 +1,17 @@
 import type { FuseResultMatch, FuseResult } from 'fuse.js'
 import Fuse from 'fuse.js'
 
-import brandService from '../brands/service'
-import discService from '../discs/service'
+import brandService from '../brand/service'
+import discService from '../disc/service'
 
-import vision from "./vision/vision";
+import vision from './vision/vision'
 
 
 export class AIService {
+    init () {
+        return this
+    }
+
     getMatchedText = (searchResult: FuseResult<FuseResultMatch>[]) => {
         const matches = []
 

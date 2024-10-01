@@ -1,9 +1,13 @@
-import Brand from '../brands/models/brand'
+import Brand from '../brand/models/brand'
 
 import DiscMold from './models/disc'
 
 
 export class DiscService {
+    init () {
+        return this
+    }
+
     findAll = async () => {
         return DiscMold.findAll({
             include: Brand,

@@ -1,14 +1,40 @@
 import { Request, Response } from 'express'
 
+import AppController from '../../lib/app-controller'
+
 import inventoryService from './service'
 
 import smslib from '../sms/lib'
-import { sendSms } from "../sms/twilio.service";
-import { formatClaimInventoryMessage, optInMessage } from "../sms/sms.model";
+import { sendSms } from "../sms/twilio.service"
+import { formatClaimInventoryMessage, optInMessage } from "../sms/sms.model"
+
+import { requireLogin, requireOrgAuth } from '../../web/middleware'
 
 
-export class InventoryController {
+export class InventoryController extends AppController {
     public service = inventoryService
+
+    init () {
+        this.basePath = '/inventory'
+
+        inventoryService.init()
+
+        this.router.patch(
+            '/:itemId',
+            requireLogin,
+            requireOrgAuth(async (req) => {
+                const item = await this.service.findById(parseInt(req.params.itemId))
+                if (item)
+                    return item.orgCode
+                return null
+            }),
+            this.update
+        )
+        this.router.post('', requireLogin, this.create)
+        this.router.get('', this.findAll)
+
+        return this
+    }
 
     findAll = async (req: Request, res: Response) => {
         const result = await inventoryService.findAll(req.query as {[key: string]: string[]})
@@ -19,6 +45,11 @@ export class InventoryController {
                 attributes: d,
             }))
         })
+    }
+
+    findById = async (req: Request, res: Response) => {
+        const result = await inventoryService.findById(parseInt(req.params.itemId))
+        res.send(result)
     }
 
     create = async (req: Request, res: Response) => {
@@ -77,8 +108,10 @@ export class InventoryController {
     }
 
     update = async (req: Request, res: Response) => {
-        await inventoryService.update(parseInt(req.params.itemId), req.body.data.attributes)
-        res.send({ data: { id: req.params.itemId, ...req.body.data, type: 'inventory' } })
+        const itemId = parseInt(req.params.itemId)
+
+        await inventoryService.update(itemId, req.body.data.attributes)
+        res.send({ data: { id: itemId, ...req.body.data, type: 'inventory' } })
     }
 }
 

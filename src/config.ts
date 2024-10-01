@@ -26,6 +26,15 @@ export class EnvConfig {
     port: number
 
     @IsArray()
+    appCORS: string[]
+
+    @IsString()
+    authIssuer: string
+
+    @IsString()
+    authAudience: string
+
+    @IsArray()
     autoAttributes: string[]
 
     @IsString()
@@ -51,6 +60,11 @@ export class EnvConfig {
             'updatedAt',
         ]
 
+        this.appCORS = process.env.APP_CORS.split(','),
+
+        this.authIssuer = process.env.AUTH_ISSUER,
+        this.authAudience = process.env.AUTH_AUDIENCE,
+
         this.twilioAuthToken = process.env.TWILIO_AUTH_TOKEN,
         this.twilioSID = process.env.TWILIO_SID,
         this.twilioSendFrom = process.env.TWILIO_SEND_FROM,
@@ -71,4 +85,4 @@ export class EnvConfig {
 }
 
 
-export default new EnvConfig;
+export default new EnvConfig

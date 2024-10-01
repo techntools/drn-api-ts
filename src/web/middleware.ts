@@ -1,7 +1,18 @@
-import { AUTH_ISSUER } from "./env";
+import { auth } from 'express-oauth2-jwt-bearer'
+
+import config from '../config'
+
 
 /**
- * handle extracting the org_code from the request auth jwt claims
+ * Middleware that requires a minimal valid auth token
+ */
+export const requireLogin = auth({
+  issuerBaseURL: config.authIssuer,
+  audience: config.authAudience,
+});
+
+/**
+ * Handle extracting the org_code from the request auth jwt claims
  * if not found or invalid sends an error to the client and returns null
  * else returns the users org_code
  *
@@ -57,7 +68,7 @@ export const requireOrgAuth = (
 };
 
 /**
- * middleware to allow auth tokens authenticated directly with the oauth provider
+ * Middleware to allow auth tokens authenticated directly with the oauth provider
  * using client_credentials
  *
  * @param {Request} req express request
@@ -69,7 +80,7 @@ const allowClientCredentialsGrantType = (req): boolean => {
     return false;
   }
   const issuer = req.auth?.payload?.iss ?? null;
-  if (issuer !== AUTH_ISSUER) {
+  if (issuer !== config.authIssuer) {
     return false;
   }
   return true;

@@ -1,23 +1,47 @@
 import { Request, Response } from 'express'
-import twilio, { twiml } from "twilio";
+import twilio, { twiml } from 'twilio'
+
+import AppController from '../../lib/app-controller'
 
 import smsService from './service'
 import lib from './lib'
 
-import { sendSms, sendVCard } from "../sms/twilio.service";
+import { sendSms, sendVCard } from '../sms/twilio.service'
 import {
   OPT_IN_KEYWORDS,
   OPT_OUT_KEYWORDS,
   formatClaimInventoryMessage,
   optInMessage,
-} from "./sms.model";
+} from './sms.model';
 
 import inventoryLib from '../inventory/lib'
 
 import config from '../../config'
 
+import { requireLogin } from '../../web/middleware'
 
-export class SMSController {
+import { vcard } from "../../vcard"
+
+
+export class SMSController extends AppController {
+    init () {
+        this.basePath = '/sms'
+
+        smsService.init()
+
+        this.router.get('/phone-opt-ins/twilio/vcf', async (_, res) => {
+            res.setHeader('Content-Type', 'text/vcard')
+            res.send(vcard)
+        })
+        this.router.post('/phone-opt-ins/twilio', this.handleTwilioSms)
+        this.router.get('/phone-opt-ins', this.findAllPhoneOptIns)
+        this.router.put("/phone-opt-ins", requireLogin, this.updatePhoneOptIn)
+
+        this.router.post('', requireLogin, this.postSms)
+
+        return this
+    }
+
     findAllPhoneOptIns = async (req: Request, res: Response) => {
         const result = await smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
         res.send({
