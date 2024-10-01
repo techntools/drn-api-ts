@@ -49,6 +49,12 @@ export class EnvConfig {
     @IsString()
     twilioWebhookURL: string
 
+    @IsString()
+    twilio_vcf_url: string
+
+    @IsString()
+    twilioMessagingSID: string
+
     dbConfig: DatabaseConfig
 
     async init() {
@@ -69,6 +75,8 @@ export class EnvConfig {
         this.twilioSID = process.env.TWILIO_SID,
         this.twilioSendFrom = process.env.TWILIO_SEND_FROM,
         this.twilioWebhookURL = process.env.TWILIO_WEBHOOK_URL,
+        this.twilio_vcf_url = process.env.TWILIO_VCF_URL,
+        this.twilioMessagingSID = process.env.TWILIO_MESSAGING_SID,
 
         this.dbConfig = new DatabaseConfig
         this.dbConfig.dialect = process.env.DB_DIALECT as Dialect
