@@ -3,8 +3,10 @@ import twilio, { twiml } from 'twilio'
 
 import AppController from '../../lib/app-controller'
 import { Forbidden, InternalServerError } from '../../lib/error'
+import oapi, { oapiPathDef, paginatedResponse } from '../../lib/openapi'
 
 import smsService from './service'
+import generate from './openapi-schema'
 import lib from './lib'
 
 import { sendSms, sendVCard } from '../sms/twilio.service'
@@ -26,6 +28,8 @@ import { vcard } from "../../vcard"
 
 export class SMSController extends AppController {
     init () {
+        const schemas = generate()
+
         this.basePath = '/sms'
 
         smsService.init()
@@ -34,11 +38,44 @@ export class SMSController extends AppController {
             res.setHeader('Content-Type', 'text/vcard')
             res.send(vcard)
         })
-        this.router.post('/phone-opt-ins/twilio', this.handleTwilioSms)
-        this.router.get('/phone-opt-ins', this.findAllPhoneOptIns)
-        this.router.put("/phone-opt-ins", requireLogin, this.updatePhoneOptIn)
 
-        this.router.post('', requireLogin, this.postSms)
+        this.router.post(
+            '/phone-opt-ins/twilio',
+            oapi.validPath(oapiPathDef({
+                requestBodySchema: schemas.TwilioSMSSchema,
+                summary: 'Send Twilio SMS'
+            })),
+            this.handleTwilioSms
+        )
+
+        this.router.put(
+            '/phone-opt-ins',
+            requireLogin,
+            oapi.validPath(oapiPathDef({
+                requestBodySchema: schemas.UpdatePhoneOptInSchema,
+                summary: 'Update Phone Opt In'
+            })),
+            this.updatePhoneOptIn
+        )
+
+        this.router.post(
+            '',
+            requireLogin,
+            oapi.validPath(oapiPathDef({
+                requestBodySchema: schemas.CreatePhoneOptInSchema,
+                summary: 'Opt In To SMS'
+            })),
+            this.postSms
+        )
+
+        this.router.get(
+            '/phone-opt-ins',
+            oapi.validPath(oapiPathDef({
+                responseData: paginatedResponse(schemas.GetPhoneOptInSchema),
+                summary: 'Get Phone Opt In'
+            })),
+            this.findAllPhoneOptIns
+        )
 
         return this
     }
@@ -57,9 +94,9 @@ export class SMSController extends AppController {
     updatePhoneOptIn = AppController.asyncHandler(
         async (req: Request) => {
             await smsService.updatePhoneOptIn(
-                req.body.data.id,
+                req.body.id,
                 {
-                    sms_consent: req.body.data.attributes.smsConsent,
+                    sms_consent: req.body.smsConsent,
                 }
             )
             return req.body
@@ -68,24 +105,24 @@ export class SMSController extends AppController {
 
     postSms = AppController.asyncHandler(
         async (req: Request) => {
-            const postSmsRequestBody = req.body
-            if (postSmsRequestBody.data.initialText) {
-                const optInStatus = await lib.getOptInStatus(postSmsRequestBody.data.phone)
+            const reqBody = req.body
+            if (reqBody.initialText) {
+                const optInStatus = await lib.getOptInStatus(reqBody.phone)
 
                 let setDateTexted = false
 
                 if (optInStatus === null) {
                     // request opt in
                     const smsResponse = await sendSms(
-                        postSmsRequestBody.data.phone,
+                        reqBody.phone,
                         optInMessage
                     )
                     setDateTexted = !smsResponse === true
                 } else if (optInStatus.sms_consent === 1) {
                     // user is opted in, send text
                     const sendSmsResponse = await sendSms(
-                        postSmsRequestBody.data.phone,
-                        postSmsRequestBody.data.message
+                        reqBody.phone,
+                        reqBody.message
                     )
 
                     setDateTexted = !sendSmsResponse === true
@@ -102,15 +139,15 @@ export class SMSController extends AppController {
                 }
 
                 if (setDateTexted) {
-                    await inventoryLib.update(postSmsRequestBody.data.discId, {
+                    await inventoryLib.update(reqBody.discId, {
                         dateTexted: new Date(new Date().toISOString().split("T")[0]),
                     })
                 }
             } else {
                 // send the text
                 const sendSmsResponse = await sendSms(
-                    postSmsRequestBody.data.phone,
-                    postSmsRequestBody.data.message
+                    reqBody.phone,
+                    reqBody.message
                 )
 
                 if (typeof sendSmsResponse === "object" && "errors" in sendSmsResponse) {
@@ -119,10 +156,10 @@ export class SMSController extends AppController {
 
                 // Log the custom SMS
                 await smsService.insertSmsLog({
-                    disc_id: postSmsRequestBody.data.discId,
-                    message: postSmsRequestBody.data.message,
-                    sent_by: postSmsRequestBody.data.userId,
-                    recipient_phone: postSmsRequestBody.data.phone,
+                    disc_id: reqBody.discId,
+                    message: reqBody.message,
+                    sent_by: reqBody.userId,
+                    recipient_phone: reqBody.phone,
                     sent_at: new Date(),
                 })
             }

@@ -2,12 +2,14 @@ import { Request, Response } from 'express'
 
 import AppController from '../../lib/app-controller'
 import { Forbidden } from '../../lib/error'
+import oapi, { oapiPathDef, paginatedResponse } from '../../lib/openapi'
 
 import inventoryService from './service'
+import generate from './openapi-schema'
 
 import smslib from '../sms/lib'
-import { sendSms } from "../sms/twilio.service"
-import { formatClaimInventoryMessage, optInMessage } from "../sms/sms.model"
+import { sendSms } from '../sms/twilio.service'
+import { formatClaimInventoryMessage, optInMessage } from '../sms/sms.model'
 
 import { requireLogin, requireOrgAuth } from '../../web/middleware'
 
@@ -16,6 +18,12 @@ export class InventoryController extends AppController {
     public service = inventoryService
 
     init () {
+        const schemas = generate()
+
+        const CreateInventorySchema = schemas.CreateInventorySchema
+        const UpdateInventorySchema = schemas.UpdateInventorySchema
+        const GetInventorySchema = schemas.GetInventorySchema
+
         this.basePath = '/inventory'
 
         inventoryService.init()
@@ -29,10 +37,31 @@ export class InventoryController extends AppController {
                     return item.orgCode
                 return null
             }),
+            oapi.validPath(oapiPathDef({
+                requestBodySchema: UpdateInventorySchema,
+                summary: 'Update Inventory'
+            })),
             this.update
         )
-        this.router.post('', requireLogin, this.create)
-        this.router.get('', this.findAll)
+
+        this.router.post(
+            '',
+            requireLogin,
+            oapi.validPath(oapiPathDef({
+                requestBodySchema: CreateInventorySchema,
+                summary: 'Create Inventory'
+            })),
+            this.create
+        )
+
+        this.router.get(
+            '',
+            oapi.validPath(oapiPathDef({
+                responseData: paginatedResponse(GetInventorySchema),
+                summary: 'Get Inventory'
+            })),
+            this.findAll
+        )
 
         return this
     }

@@ -4,8 +4,10 @@ import logger from 'morgan'
 import cors from 'cors'
 import bodyParser from 'body-parser'
 import compression from 'compression'
+import { apiReference } from '@scalar/express-api-reference'
 
 import { SuccessResponse, ResponseData } from '../lib/service-response'
+import oapi, { errorHandler as oapiErrorHandler } from '../lib/openapi'
 
 import defaultErrorHandler from './error'
 import storeErrorHandler from '../store/error'
@@ -33,7 +35,13 @@ export class Web {
             logger("dev"),
             bodyParser.json({ limit: '5mb' }),
             bodyParser.urlencoded({ extended: true }),
-            helmet(),
+            helmet({
+                contentSecurityPolicy: {
+                    directives: {
+                        'script-src': ["'self'", "cdnjs.cloudflare.com", "cdn.jsdelivr.net", "'unsafe-inline'", "'unsafe-eval'"]
+                    }
+                }
+            }),
             cors({
                 allowedHeaders: ['Content-Type', 'Authorization'],
                 origin: [...config.appCORS, /\.discrescuenetwork\.com$/],
@@ -43,12 +51,24 @@ export class Web {
 
         this.app.get('/health-check', healthCheck)
 
+        this.app.get(
+            '/docs',
+            apiReference({
+                theme: 'default',
+                spec: {
+                    url: '/openapi.json',
+                },
+            })
+        )
+
         disc.init()
         brand.init()
         course.init()
         inventory.init()
         sms.init()
         ai.init()
+
+        this.add(oapi)
 
         this.add(disc.router, disc.basePath)
         this.add(brand.router, brand.basePath)
@@ -58,6 +78,7 @@ export class Web {
         this.add(ai.router, ai.basePath)
 
         this.add(storeErrorHandler)
+        this.add(oapiErrorHandler)
         this.add(defaultErrorHandler)
 
         express.response.success = async function(dataOrPromise: Promise<ResponseData | undefined> | ResponseData, next: NextFunction) {
