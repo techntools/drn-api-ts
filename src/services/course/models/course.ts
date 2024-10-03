@@ -1,37 +1,71 @@
-import { PrimaryKey, Column, Table, Model } from 'sequelize-typescript'
+import { Column, Table, Model, Length } from 'sequelize-typescript'
+
+import { StoreLib } from '../../../store/lib'
 
 
-@Table({
-    tableName: 'courses',
-    timestamps: true
-})
+@Table
 export default class Course extends Model {
-    @PrimaryKey
-    @Column
+    @Length({
+        msg: 'length needs to be between 1 and 17',
+        min: 1,
+        max: 17
+    })
+    @Column({
+        allowNull: false,
+    })
     orgCode: string
 
-    @Column
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
+    @Column({
+        allowNull: false,
+    })
     courseName: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
     state: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
     city: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 8',
+        min: 1,
+        max: 8
+    })
     @Column
     shortCode: string
 
     @Column
     activeForLostAndFound: boolean
 
+    @Column({
+        validate: StoreLib.isUrl
+    })
     @Column
     shortLink: string
 
-    @Column
+    @Column({
+        validate: StoreLib.isUrl
+    })
     link: string
 
-    @Column
+    @Column({
+        validate: StoreLib.isUrl
+    })
     udiscLeagueURL: string
 }
 

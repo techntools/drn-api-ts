@@ -1,28 +1,41 @@
-import { BelongsTo, ForeignKey, PrimaryKey, Column, Table, Model } from 'sequelize-typescript'
+import { BelongsTo, ForeignKey, Column, Table, Model, Length } from 'sequelize-typescript'
 
 import Brand from '../../brand/models/brand'
 
 
-@Table({
-    tableName: 'disc_molds'
-})
+@Table
 export default class DiscMold extends Model {
-    @PrimaryKey
-    @Column
-    MoldID: number
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
+    @Column({
+        allowNull: false,
+    })
+    name: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
-    MoldName: string
+    plasticType: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
-    PlasticType: string
-
-    @Column
-    Category: string
+    category: string
 
     @ForeignKey(() => Brand)
-    @Column
-    BrandID: number;
+    @Column({
+        allowNull: false
+    })
+    brandId: number
 
     @BelongsTo(() => Brand)
     brand: Brand

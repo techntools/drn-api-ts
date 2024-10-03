@@ -34,8 +34,8 @@ export class BrandController extends AppController {
             const result = await brandService.findAll(req.query.name as string[])
             return result.map(d => ({
                 type: 'brand',
-                id: d.BrandID,
-                attributes: { BrandName: d.BrandName },
+                id: d.id,
+                attributes: { brandName: d.name },
             }))
         }
     )

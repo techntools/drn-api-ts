@@ -25,8 +25,8 @@ import config from './config';
 
     await config.init()
 
-    const web = await import('./web')
     const store = await import('./store')
+    const web = await import('./web')
 
     /*
      * Start the server even if connection with outside resources is not

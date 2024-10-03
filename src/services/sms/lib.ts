@@ -1,6 +1,6 @@
 import { Op } from 'sequelize'
 
-import PhoneOptIn from './models/phone-opt-ins'
+import PhoneOptIn from './models/phone-opt-in'
 
 
 export class SMSlib {

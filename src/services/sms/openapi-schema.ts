@@ -1,6 +1,6 @@
 import { SchemaManager, OpenApiStrategy } from '@techntools/sequelize-to-openapi'
 
-import PhoneOptIn from './models/phone-opt-ins'
+import PhoneOptIn from './models/phone-opt-in'
 
 
 export default function () {

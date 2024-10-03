@@ -1,16 +1,22 @@
-import { PrimaryKey, Column, Table, Model } from 'sequelize-typescript'
+import { HasMany, Column, Table, Model, Length } from 'sequelize-typescript'
+
+import DiscMold from '../../disc/models/disc'
 
 
-@Table({
-    tableName: 'brands'
-})
+@Table
 export default class Brand extends Model {
-    @PrimaryKey
-    @Column
-    BrandID: number
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
+    @Column({
+        allowNull: false,
+    })
+    name: string
 
-    @Column
-    BrandName: string
+    @HasMany(() => DiscMold)
+    discs: DiscMold[]
 }
 
 

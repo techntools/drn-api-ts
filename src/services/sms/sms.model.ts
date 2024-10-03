@@ -1,5 +1,3 @@
-export const PHONE_OPT_IN_TYPE = "phoneOptIn";
-
 export const OPT_IN_KEYWORDS: string[] = [
   "start",
   "disc",

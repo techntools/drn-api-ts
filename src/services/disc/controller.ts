@@ -34,11 +34,11 @@ export class DiscController extends AppController {
             const result = await discService.findAll()
             return result.map(d => ({
                 type: 'disc',
-                id: d.MoldID,
+                id: d.id,
                 attributes: {
-                    MoldName: d.MoldName,
-                    BrandID: d.BrandID,
-                    BrandName: d.brand?.BrandName,
+                    MoldName: d.name,
+                    BrandID: d.brandId,
+                    BrandName: d.brand?.name,
                 },
             }))
         }

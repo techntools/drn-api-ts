@@ -111,7 +111,7 @@ export class InventoryController extends AppController {
                         optInMessage
                     )
                     setDateTexted = !smsResponse === true
-                } else if (optInStatus.sms_consent === 1) {
+                } else if (optInStatus.smsConsent) {
                     // user is opted in, send text
                     const smsResponse = await sendSms(
                         body.phoneNumber,

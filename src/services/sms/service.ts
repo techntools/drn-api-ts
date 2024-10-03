@@ -1,6 +1,6 @@
 import { Op } from 'sequelize'
 
-import PhoneOptIn, { PhoneOptInData } from './models/phone-opt-ins'
+import PhoneOptIn, { PhoneOptInData } from './models/phone-opt-in'
 import SMSLogs, { SMSLogsData } from './models/sms-logs'
 
 

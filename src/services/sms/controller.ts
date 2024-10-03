@@ -86,7 +86,7 @@ export class SMSController extends AppController {
             return result.map(r => ({
                 type: 'phoneOptIn',
                 id: r.id,
-                attributes: { smsConsent: r.sms_consent },
+                attributes: { smsConsent: r.smsConsent },
             }))
         }
     )
@@ -96,7 +96,7 @@ export class SMSController extends AppController {
             await smsService.updatePhoneOptIn(
                 req.body.id,
                 {
-                    sms_consent: req.body.smsConsent,
+                    smsConsent: req.body.smsConsent,
                 }
             )
             return req.body
@@ -118,7 +118,7 @@ export class SMSController extends AppController {
                         optInMessage
                     )
                     setDateTexted = !smsResponse === true
-                } else if (optInStatus.sms_consent === 1) {
+                } else if (optInStatus.smsConsent) {
                     // user is opted in, send text
                     const sendSmsResponse = await sendSms(
                         reqBody.phone,
@@ -156,11 +156,8 @@ export class SMSController extends AppController {
 
                 // Log the custom SMS
                 await smsService.insertSmsLog({
-                    disc_id: reqBody.discId,
-                    message: reqBody.message,
-                    sent_by: reqBody.userId,
-                    recipient_phone: reqBody.phone,
-                    sent_at: new Date(),
+                    ...reqBody,
+                    sentAt: new Date(),
                 })
             }
 
@@ -189,16 +186,16 @@ export class SMSController extends AppController {
 
             if (OPT_OUT_KEYWORDS.includes(testMessage)) {
                 await smsService.updatePhoneOptIn(phoneNumber, {
-                    sms_consent: 0,
+                    smsConsent: false,
                 })
 
                 return 'Successfully opted out of SMS'
             } else {
                 const optInStatus = await lib.getOptInStatus(phoneNumber)
                 if (OPT_IN_KEYWORDS.includes(testMessage)) {
-                    if (optInStatus && optInStatus.sms_consent === 0) {
+                    if (optInStatus && !optInStatus.smsConsent) {
                         await smsService.updatePhoneOptIn(phoneNumber, {
-                            sms_consent: 1,
+                            smsConsent: true,
                         })
 
                         await sendVCard(
@@ -209,13 +206,13 @@ export class SMSController extends AppController {
                 } else {
                     if (!optInStatus) {
                         await smsService.updatePhoneOptIn(phoneNumber, {
-                            sms_consent: 0,
+                            smsConsent: false,
                         })
 
                         await sendSms(phoneNumber, optInMessage)
 
                         throw new Forbidden('You have not opted for SMS. Please check SMS to opt in.')
-                    } else if (optInStatus.sms_consent === 0) {
+                    } else if (!optInStatus.smsConsent) {
                         throw new Forbidden('You have not opted for SMS')
                     }
                 }
