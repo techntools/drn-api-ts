@@ -41,7 +41,7 @@ export default class SMSLogs extends Model {
     sentBy: string
 
     @BelongsTo(() => UserAccount, { targetKey: 'kindeId', onDelete: 'CASCADE' })
-    sender: UserAccount
+    sender?: UserAccount
 
     @Column({
         allowNull: false

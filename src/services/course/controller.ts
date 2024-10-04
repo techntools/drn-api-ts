@@ -31,12 +31,7 @@ export class CourseController extends AppController {
 
     findAll = AppController.asyncHandler(
         async (req: Request) => {
-            const result = await courseService.findAll(req.query as {[key: string]: string[]})
-            return result.map(r => ({
-                type: 'course',
-                id: r.orgCode,
-                attributes: r,
-            }))
+            return courseService.findAll(req.query as {[key: string]: string[]})
         }
     )
 }

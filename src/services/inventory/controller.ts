@@ -68,12 +68,7 @@ export class InventoryController extends AppController {
 
     findAll = AppController.asyncHandler(
         async (req: Request) => {
-            const result = await inventoryService.findAll(req.query as {[key: string]: string[]})
-            return result.map(d => ({
-                type: 'inventory',
-                id: d.id,
-                attributes: d,
-            }))
+            return inventoryService.findAll(req.query as {[key: string]: string[]})
         }
     )
 
@@ -130,20 +125,13 @@ export class InventoryController extends AppController {
                 }
             }
 
-            return {
-                attributes: newItem.dataValues,
-                type: 'inventory',
-                id: newItem.id,
-            }
+            return newItem.dataValues
         }
     )
 
     update = AppController.asyncHandler(
         async (req: Request) => {
-            const itemId = parseInt(req.params.itemId)
-
-            await inventoryService.update(itemId, req.body)
-            return { id: itemId, ...req.body, type: 'inventory' }
+            return inventoryService.update(parseInt(req.params.itemId), req.body)
         }
     )
 }

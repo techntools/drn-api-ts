@@ -2,6 +2,7 @@ import { SchemaManager, OpenApiStrategy } from '@techntools/sequelize-to-openapi
 
 import config from '../../config'
 
+import SMSLogs from './models/sms-logs'
 import PhoneOptIn from './models/phone-opt-in'
 
 
@@ -9,39 +10,10 @@ export default function () {
     const schemaManager = new SchemaManager
     const strategy = new OpenApiStrategy
 
-    const CreatePhoneOptInSchema = {
-        type: 'object',
-        required: [
-            'phone',
-            'message',
-            'initialText',
-            'discId',
-            'userId'
-        ],
-        properties: {
-            phone: {
-                type: 'string',
-                example: '7099554266'
-            },
-            message: {
-                type: 'string',
-                example: 'Say Hi',
-                minLength: 1
-            },
-            initialText: {
-                type: 'integer',
-                enum: [1, 0],
-            },
-            discId: {
-                type: 'integer',
-                minimum: 1
-            },
-            userId: {
-                type: 'string',
-                minLength: 1
-            }
-        }
-    }
+    const CreateSMSLogSchema = schemaManager.generate(SMSLogs, strategy, {
+        exclude: ['sentAt', ...config.autoAttributes],
+        associations: false
+    })
 
     const UpdatePhoneOptInSchema = schemaManager.generate(PhoneOptIn, strategy, {
         exclude: config.autoAttributes,
@@ -67,7 +39,7 @@ export default function () {
     }
 
     return {
-        CreatePhoneOptInSchema,
+        CreateSMSLogSchema,
         UpdatePhoneOptInSchema,
         GetPhoneOptInSchema,
         TwilioSMSSchema,

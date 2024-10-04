@@ -34,13 +34,13 @@ export class SMSController extends AppController {
 
         smsService.init()
 
-        this.router.get('/phone-opt-ins/twilio/vcf', async (_, res) => {
+        this.router.get('/phone-opt-in/twilio/vcf', async (_, res) => {
             res.setHeader('Content-Type', 'text/vcard')
             res.send(vcard)
         })
 
         this.router.post(
-            '/phone-opt-ins/twilio',
+            '/phone-opt-in/twilio',
             oapi.validPath(oapiPathDef({
                 requestBodySchema: schemas.TwilioSMSSchema,
                 summary: 'Send Twilio SMS'
@@ -49,7 +49,7 @@ export class SMSController extends AppController {
         )
 
         this.router.put(
-            '/phone-opt-ins',
+            '/phone-opt-in',
             requireLogin,
             oapi.validPath(oapiPathDef({
                 requestBodySchema: schemas.UpdatePhoneOptInSchema,
@@ -62,14 +62,14 @@ export class SMSController extends AppController {
             '',
             requireLogin,
             oapi.validPath(oapiPathDef({
-                requestBodySchema: schemas.CreatePhoneOptInSchema,
+                requestBodySchema: schemas.CreateSMSLogSchema,
                 summary: 'Opt In To SMS'
             })),
             this.postSms
         )
 
         this.router.get(
-            '/phone-opt-ins',
+            '/phone-opt-in',
             oapi.validPath(oapiPathDef({
                 responseData: paginatedResponse(schemas.GetPhoneOptInSchema),
                 summary: 'Get Phone Opt In'
@@ -82,12 +82,7 @@ export class SMSController extends AppController {
 
     findAllPhoneOptIns = AppController.asyncHandler(
         async (req: Request) => {
-            const result = await smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
-            return result.map(r => ({
-                type: 'phoneOptIn',
-                id: r.id,
-                attributes: { smsConsent: r.smsConsent },
-            }))
+            return smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
         }
     )
 
@@ -101,21 +96,21 @@ export class SMSController extends AppController {
         async (req: Request) => {
             const reqBody = req.body
             if (reqBody.initialText) {
-                const optInStatus = await lib.getOptInStatus(reqBody.phone)
+                const optInStatus = await lib.getOptInStatus(reqBody.recipientPhone)
 
                 let setDateTexted = false
 
                 if (optInStatus === null) {
                     // request opt in
                     const smsResponse = await sendSms(
-                        reqBody.phone,
+                        reqBody.recipientPhone,
                         optInMessage
                     )
                     setDateTexted = !smsResponse === true
                 } else if (optInStatus.smsConsent) {
                     // user is opted in, send text
                     const sendSmsResponse = await sendSms(
-                        reqBody.phone,
+                        reqBody.recipientPhone,
                         reqBody.message
                     )
 
@@ -140,7 +135,7 @@ export class SMSController extends AppController {
             } else {
                 // send the text
                 const sendSmsResponse = await sendSms(
-                    reqBody.phone,
+                    reqBody.recipientPhone,
                     reqBody.message
                 )
 
