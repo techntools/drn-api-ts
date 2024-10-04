@@ -146,7 +146,9 @@ export default class Inventory extends Model {
     @Column
     orgCode: string
 
-    @Column
+    @Column({
+        type: DataType.DATEONLY
+    })
     dateOfReminderText: Date
 }
 

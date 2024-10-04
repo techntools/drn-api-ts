@@ -82,7 +82,7 @@ const oldDb = new Sequelize(
         })
 
         Course.bulkCreate(cs)
-    } else if (0) {
+    } else if (1) {
         const inventory = await oldDb.query('select * from found_discs')
 
         const inv = []
@@ -94,7 +94,7 @@ const oldDb = new Sequelize(
         })
 
         Inventory.bulkCreate(inv)
-    } else if (1) {
+    } else if (0) {
         const phoneOptIns = await oldDb.query('select * from phone_opt_ins')
 
         const poi = []
