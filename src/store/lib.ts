@@ -7,10 +7,17 @@ export class StoreLib {
       msg: 'needs to be valid url'
     }
   }
+
   static isMobilePhone = {
       isMobilePhone(value: string) {
           return isMobilePhone(value, ['en-US', 'en-IN'])
       }
+  }
+
+  static isEmail = {
+    isEmail: {
+      msg: 'needs to be valid email'
+    }
   }
 }
 

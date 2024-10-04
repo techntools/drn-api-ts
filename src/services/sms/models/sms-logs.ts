@@ -3,6 +3,7 @@ import { BelongsTo, ForeignKey, DataType, Column, Table, Model, Length } from 's
 import { StoreLib } from '../../../store/lib'
 
 import DiscMold from '../../disc/models/disc'
+import UserAccount from '../../user/models/account'
 
 
 @Table
@@ -33,10 +34,14 @@ export default class SMSLogs extends Model {
     })
     recipientPhone: string
 
+    @ForeignKey(() => UserAccount)
     @Column({
         allowNull: false
     })
     sentBy: string
+
+    @BelongsTo(() => UserAccount, { targetKey: 'kindeId', onDelete: 'CASCADE' })
+    sender: UserAccount
 
     @Column({
         allowNull: false

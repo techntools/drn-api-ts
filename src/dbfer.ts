@@ -3,6 +3,7 @@ import { Sequelize } from 'sequelize-typescript'
 import config from './config'
 import store from './store'
 
+import UserAccount from './services/user/models/account'
 import Brand from './services/brand/models/brand'
 import DiscMold from './services/disc/models/disc'
 import Course from './services/course/models/course'
@@ -26,6 +27,26 @@ const oldDb = new Sequelize(
     await store.init()
 
     if (0) {
+        const accounts = await oldDb.query('select * from user_accounts')
+
+        const accs = []
+        accounts[0].forEach((ac: any) => {
+            accs.push({
+                id: ac.user_id,
+                firstName: ac.first_name,
+                lastName: ac.last_name,
+                phoneNumber: ac.phone_number,
+                email: ac.email,
+                textingOptInStatus: ac.texting_opt_in_status ? true : false,
+                accountType: ac.account_type,
+                homeCourse: ac.home_course,
+                udiscDisplayName: ac.udisc_display_name,
+                kindeId: ac.kinde_id,
+            })
+        })
+
+        UserAccount.bulkCreate(accs)
+    } else if (0) {
         const brands = await oldDb.query('select * from brands')
 
         const bs = []
