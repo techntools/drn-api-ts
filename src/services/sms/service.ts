@@ -25,8 +25,8 @@ export class SMSService {
         })
     }
 
-    updatePhoneOptIn = async (id: string, data: Partial<PhoneOptInData>) => {
-        return PhoneOptIn.upsert({ ...data, id })
+    updatePhoneOptIn = async (data: Partial<PhoneOptInData>) => {
+        return PhoneOptIn.upsert(data)
     }
 
     insertSmsLog = async (data: SMSLogsData) => {

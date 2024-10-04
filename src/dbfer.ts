@@ -94,7 +94,7 @@ const oldDb = new Sequelize(
         })
 
         Inventory.bulkCreate(inv)
-    } else if (0) {
+    } else if (1) {
         const phoneOptIns = await oldDb.query('select * from phone_opt_ins')
 
         const poi = []
@@ -106,7 +106,7 @@ const oldDb = new Sequelize(
         })
 
         PhoneOptIn.bulkCreate(poi, { validate: true })
-    } else if (1) {
+    } else if (0) {
         const smsLogs = await oldDb.query('select * from sms_logs')
 
         const logs = []

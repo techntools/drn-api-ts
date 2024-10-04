@@ -1,13 +1,13 @@
-import { DataType, Column, Table, Model } from 'sequelize-typescript'
+import { PrimaryKey, DataType, Column, Table, Model } from 'sequelize-typescript'
 
 import { StoreLib } from '../../../store/lib'
 
 
 @Table
 export default class PhoneOptIn extends Model {
+    @PrimaryKey
     @Column({
-        allowNull: false,
-        validate: StoreLib.isMobilePhone
+        validate: StoreLib.isMobilePhone,
     })
     phoneNumber: string
 

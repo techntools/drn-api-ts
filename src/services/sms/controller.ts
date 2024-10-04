@@ -93,13 +93,7 @@ export class SMSController extends AppController {
 
     updatePhoneOptIn = AppController.asyncHandler(
         async (req: Request) => {
-            await smsService.updatePhoneOptIn(
-                req.body.id,
-                {
-                    smsConsent: req.body.smsConsent,
-                }
-            )
-            return req.body
+            return smsService.updatePhoneOptIn(req.body)
         }
     )
 
@@ -185,7 +179,8 @@ export class SMSController extends AppController {
             const testMessage = message.trim().toLowerCase()
 
             if (OPT_OUT_KEYWORDS.includes(testMessage)) {
-                await smsService.updatePhoneOptIn(phoneNumber, {
+                await smsService.updatePhoneOptIn({
+                    phoneNumber,
                     smsConsent: false,
                 })
 
@@ -194,7 +189,8 @@ export class SMSController extends AppController {
                 const optInStatus = await lib.getOptInStatus(phoneNumber)
                 if (OPT_IN_KEYWORDS.includes(testMessage)) {
                     if (optInStatus && !optInStatus.smsConsent) {
-                        await smsService.updatePhoneOptIn(phoneNumber, {
+                        await smsService.updatePhoneOptIn({
+                            phoneNumber,
                             smsConsent: true,
                         })
 
@@ -205,7 +201,8 @@ export class SMSController extends AppController {
                     }
                 } else {
                     if (!optInStatus) {
-                        await smsService.updatePhoneOptIn(phoneNumber, {
+                        await smsService.updatePhoneOptIn({
+                            phoneNumber,
                             smsConsent: false,
                         })
 

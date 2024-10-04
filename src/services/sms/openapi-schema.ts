@@ -1,5 +1,7 @@
 import { SchemaManager, OpenApiStrategy } from '@techntools/sequelize-to-openapi'
 
+import config from '../../config'
+
 import PhoneOptIn from './models/phone-opt-in'
 
 
@@ -42,6 +44,7 @@ export default function () {
     }
 
     const UpdatePhoneOptInSchema = schemaManager.generate(PhoneOptIn, strategy, {
+        exclude: config.autoAttributes,
         associations: false
     })
 
