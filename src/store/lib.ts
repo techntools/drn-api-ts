@@ -10,7 +10,7 @@ export class StoreLib {
 
   static isMobilePhone = {
       isMobilePhone(value: string) {
-          return isMobilePhone(value, ['en-US', 'en-IN'])
+          return isMobilePhone(value, ['en-US', 'en-CA'])
       }
   }
 
