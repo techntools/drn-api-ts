@@ -31,7 +31,7 @@ export class CourseController extends AppController {
 
     findAll = AppController.asyncHandler(
         async (req: Request) => {
-            return courseService.findAll(req.query as {[key: string]: string[]})
+            return courseService.findAll(req.query.orgCode as string[])
         }
     )
 }
