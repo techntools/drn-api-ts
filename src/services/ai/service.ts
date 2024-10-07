@@ -4,7 +4,7 @@ import Fuse from 'fuse.js'
 import brandService from '../brand/service'
 import discService from '../disc/service'
 
-import vision from './vision/vision'
+import vision from './vision'
 
 
 export class AIService {

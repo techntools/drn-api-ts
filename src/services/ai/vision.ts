@@ -1,9 +1,27 @@
+import { google } from '@google-cloud/vision/build/protos/protos'
+
 import { ImageAnnotatorClient } from "@google-cloud/vision";
-import credentials from "./credentials.json";
-import { ImageDetectionData, TextData } from "./vision.model";
 import colorName from "color-namer";
 
+import credentials from "./google-credentials.json";
+
+
 const imgAnnotator = new ImageAnnotatorClient({ credentials });
+
+
+export type ImageDetectionData = {
+    text: TextData
+    colors: (google.cloud.vision.v1.IColorInfo & Record<'name', string>)[]
+}
+
+export type TextData = {
+    confidence: number
+    words: {
+        word: string
+        confidence: number
+    }[]
+}
+
 
 /**
  * Use {@link imgAnnotator} to get google vision data for a base64 image
@@ -67,5 +85,5 @@ const getImageText = async (
 };
 
 export default {
-  getImageText,
-};
+    getImageText
+}
