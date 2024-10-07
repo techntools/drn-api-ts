@@ -47,7 +47,7 @@ export class AIService {
             distance: 30,
             location: 0,
             includeMatches: true,
-            keys: ['MoldName', 'BrandName']
+            keys: ['name']
         }
 
         var fuse: Fuse<any> = new Fuse(<any>brands, fuseOptions)
