@@ -3,26 +3,38 @@ import { Op } from 'sequelize'
 import PhoneOptIn, { PhoneOptInData } from './models/phone-opt-in'
 import SMSLogs, { SMSLogsData } from './models/sms-logs'
 
+import { Page, PageOptions } from '../../lib/pagination'
+
 
 export class SMSService {
     init () {
         return this
     }
 
-    findAllPhoneOptIns = async (query: {[key: string]: string[]}) => {
+    findAllPhoneOptIns = async (
+        pageOptions: PageOptions,
+        phoneNumber?: string,
+        smsConsent?: boolean,
+    ) => {
         const where: {} = {}
 
-        if (query.phone)
-            where['id'] = { [Op.in]: query.phone.map(phone => '+' + phone.trim()) }
-
-        if (query.smsConsent)
-            where['sms_consent'] = { [Op.in]: query.smsConsent }
-
-        return PhoneOptIn.findAll({
+        const query = {
             where,
+            offset: pageOptions.offset,
+            limit: pageOptions.limit,
             raw: true,
-            nest: true
-        })
+            nest: true,
+        }
+
+        if (phoneNumber)
+            where['phoneNumber'] = { [Op.like]: `%${phoneNumber}%` }
+
+        if (smsConsent !== undefined)
+            where['smsConsent'] = smsConsent
+
+        const result = await PhoneOptIn.findAndCountAll(query)
+
+        return new Page(result.rows, result.count, pageOptions)
     }
 
     updatePhoneOptIn = async (data: Partial<PhoneOptInData>) => {

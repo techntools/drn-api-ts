@@ -1,9 +1,12 @@
 import { Request, Response } from 'express'
 import twilio, { twiml } from 'twilio'
 
+import { plainToClass } from 'class-transformer'
+
 import AppController from '../../lib/app-controller'
 import { Forbidden, InternalServerError } from '../../lib/error'
 import oapi, { oapiPathDef, paginatedResponse } from '../../lib/openapi'
+import { PageOptions } from '../../lib/pagination'
 
 import smsService from './service'
 import generate from './openapi-schema'
@@ -82,7 +85,11 @@ export class SMSController extends AppController {
 
     findAllPhoneOptIns = AppController.asyncHandler(
         async (req: Request) => {
-            return smsService.findAllPhoneOptIns(req.query as {[key: string]: string[]})
+            return smsService.findAllPhoneOptIns(
+                plainToClass(PageOptions, req.query),
+                req.query.phoneNumber as string,
+                Boolean(parseInt(req.query.smsConsent as string)),
+            )
         }
     )
 

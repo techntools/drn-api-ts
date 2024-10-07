@@ -1,3 +1,5 @@
+import Sequelize from 'sequelize'
+
 import Brand from '../brand/models/brand'
 
 import DiscMold from './models/disc'
@@ -12,10 +14,16 @@ export class DiscService {
 
     findAll = async (
         pageOptions: PageOptions,
+        q?: string
     ) => {
+        const where: {} = {}
         const include: any[] = [Brand]
 
+        if (q)
+            where['_'] = Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('DiscMold.name')), 'LIKE', '%' + q.toLocaleLowerCase() + '%')
+
         const query = {
+            where,
             include,
             offset: pageOptions.offset,
             limit: pageOptions.limit,

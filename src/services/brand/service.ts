@@ -1,4 +1,4 @@
-import { Op } from 'sequelize'
+import Sequelize from 'sequelize'
 
 import Brand from './models/brand'
 
@@ -12,7 +12,7 @@ export class BrandService {
 
     findAll = async (
         pageOptions: PageOptions,
-        names?: string[]
+        q?: string
     ) => {
         const where: {} = {}
         const query = {
@@ -23,8 +23,8 @@ export class BrandService {
             nest: true
         }
 
-        if (names)
-            where['BrandName'] = { [Op.in]: names }
+        if (q)
+            where['_'] = Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('Brand.name')), 'LIKE', '%' + q.toLocaleLowerCase() + '%')
 
         const result = await Brand.findAndCountAll(query)
 

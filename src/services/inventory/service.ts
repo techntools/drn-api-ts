@@ -1,4 +1,5 @@
-import { Op } from 'sequelize'
+import Sequelize, { Op } from 'sequelize'
+import { escape as sqlEscape } from 'mysql2'
 
 import Inventory, { InventoryData } from './models/inventory'
 
@@ -12,16 +13,28 @@ export class InventoryService {
 
     findAll = async (
         pageOptions: PageOptions,
-        q: {[key: string]: string[]}
+        q: string
     ) => {
-        const where = { ...q, deleted: 0 }
+        const where = { deleted: 0 }
 
         const query = {
             where,
             offset: pageOptions.offset,
             limit: pageOptions.limit,
             raw: true,
-            nest: true
+            nest: true,
+
+        }
+
+        if (q) {
+            const qs = `%${q.toLocaleLowerCase()}%`
+
+            query.where[Op.or] = [
+                Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('Inventory.name')), 'LIKE', qs),
+                Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('Inventory.name')), 'LIKE', qs),
+                Sequelize.literal(`MATCH (comments) AGAINST (${sqlEscape(qs)})`),
+                { 'phoneNumber': { [Op.like]: qs }},
+            ]
         }
 
         const result = await Inventory.findAndCountAll(query)

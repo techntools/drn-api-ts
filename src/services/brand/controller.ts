@@ -36,7 +36,7 @@ export class BrandController extends AppController {
         async (req: Request) => {
             return brandService.findAll(
                 plainToClass(PageOptions, req.query),
-                req.query.name as string[]
+                req.query.q as string
             )
         }
     )

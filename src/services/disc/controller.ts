@@ -36,6 +36,7 @@ export class DiscController extends AppController {
         async (req: Request) => {
             return discService.findAll(
                 plainToClass(PageOptions, req.query),
+                req.query.q as string
             )
         }
     )
