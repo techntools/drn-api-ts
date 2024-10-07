@@ -1,27 +1,45 @@
-import { DataType, Column, Table, Model } from 'sequelize-typescript'
+import { DataType, Column, Table, Model, Length } from 'sequelize-typescript'
+
+import { StoreLib } from '../../../store/lib'
 
 
-@Table({
-    tableName: 'found_discs'
-})
+@Table
 export default class Inventory extends Model {
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
     @Column
     course: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
     @Column
     name: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
     @Column
     disc: string
 
     @Column({
-        type: DataType.STRING(15)
+        validate: StoreLib.isMobilePhone
     })
     phoneNumber: string
 
-    @Column({
-        type: DataType.STRING(10)
+    @Length({
+        msg: 'length needs to be between 1 and 10',
+        min: 1,
+        max: 10
     })
+    @Column
     bin: string
 
     @Column({
@@ -55,11 +73,21 @@ export default class Inventory extends Model {
     })
     status: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 256',
+        min: 1,
+        max: 256
+    })
     @Column({
         type: DataType.TEXT
     })
     comments: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
     @Column
     color: string
 
@@ -68,16 +96,25 @@ export default class Inventory extends Model {
     })
     claimBy: Date
 
+    @Length({
+        msg: 'length needs to be between 1 and 32',
+        min: 1,
+        max: 32
+    })
     @Column
     brand: string
 
     @Column
     dateSold: Date
 
-    @Column
+    @Column({
+        validate: StoreLib.isUrl
+    })
     topImage: string
 
-    @Column
+    @Column({
+        validate: StoreLib.isUrl
+    })
     bottomImage: string
 
     @Column({
@@ -85,16 +122,33 @@ export default class Inventory extends Model {
     })
     deleted: boolean
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
     category: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 16',
+        min: 1,
+        max: 16
+    })
     @Column
     subcategory: string
 
+    @Length({
+        msg: 'length needs to be between 1 and 17',
+        min: 1,
+        max: 17
+    })
     @Column
     orgCode: string
 
-    @Column
+    @Column({
+        type: DataType.DATEONLY
+    })
     dateOfReminderText: Date
 }
 
