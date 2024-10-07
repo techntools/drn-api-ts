@@ -2,19 +2,31 @@ import { Op } from 'sequelize'
 
 import Inventory, { InventoryData } from './models/inventory'
 
+import { Page, PageOptions } from '../../lib/pagination'
+
 
 export class InventoryService {
     init () {
         return this
     }
 
-    findAll = async (query: {[key: string]: string[]}) => {
-        const where = { ...query, deleted: 0 }
-        return Inventory.findAll({
+    findAll = async (
+        pageOptions: PageOptions,
+        q: {[key: string]: string[]}
+    ) => {
+        const where = { ...q, deleted: 0 }
+
+        const query = {
             where,
+            offset: pageOptions.offset,
+            limit: pageOptions.limit,
             raw: true,
             nest: true
-        })
+        }
+
+        const result = await Inventory.findAndCountAll(query)
+
+        return new Page(result.rows, result.count, pageOptions)
     }
 
     findById = async (id: number) => {

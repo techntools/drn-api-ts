@@ -1,7 +1,10 @@
 import { Request, Response } from 'express'
 
+import { plainToClass } from 'class-transformer'
+
 import AppController from '../../lib/app-controller'
 import oapi, { oapiPathDef, paginatedResponse } from '../../lib/openapi'
+import { PageOptions } from '../../lib/pagination'
 
 import discService from './service'
 import generate from './openapi-schema'
@@ -30,8 +33,10 @@ export class DiscController extends AppController {
     }
 
     findAll = AppController.asyncHandler(
-        async (_: Request) => {
-            return discService.findAll()
+        async (req: Request) => {
+            return discService.findAll(
+                plainToClass(PageOptions, req.query),
+            )
         }
     )
 }

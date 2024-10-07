@@ -2,18 +2,30 @@ import Brand from '../brand/models/brand'
 
 import DiscMold from './models/disc'
 
+import { Page, PageOptions } from '../../lib/pagination'
+
 
 export class DiscService {
     init () {
         return this
     }
 
-    findAll = async () => {
-        return DiscMold.findAll({
-            include: Brand,
+    findAll = async (
+        pageOptions: PageOptions,
+    ) => {
+        const include: any[] = [Brand]
+
+        const query = {
+            include,
+            offset: pageOptions.offset,
+            limit: pageOptions.limit,
             raw: true,
             nest: true
-        })
+        }
+
+        const result = await DiscMold.findAndCountAll(query)
+
+        return new Page(result.rows, result.count, pageOptions)
     }
 }
 
