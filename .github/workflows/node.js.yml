@@ -26,4 +26,8 @@ jobs:
     - run: npm i
     - run: npm run build
     - run: cp ~/.env .env
+    - run: pm2 startOrReload ecosystem.config.js
+    - name: Sleep for 5 seconds
+      run: sleep 5s
+      shell: bash
     - run: ./check-restart-status.sh
