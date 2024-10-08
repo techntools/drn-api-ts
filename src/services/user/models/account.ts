@@ -1,3 +1,7 @@
+/*
+ * This table is not in use in the current codebase for now
+ */
+
 import { DataType, Column, Table, Model } from 'sequelize-typescript'
 
 import { StoreLib } from '../../../store/lib'
