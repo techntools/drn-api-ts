@@ -55,6 +55,9 @@ export class EnvConfig {
     @IsString()
     twilioMessagingSID: string
 
+    @IsString()
+    googleCredLoc: string
+
     dbConfig: DatabaseConfig
 
     async init() {
@@ -84,6 +87,8 @@ export class EnvConfig {
         this.dbConfig.host = process.env.DB_HOST
         this.dbConfig.username = process.env.DB_USER
         this.dbConfig.password = process.env.DB_PASSWORD
+
+        this.googleCredLoc = process.env.GOOGLE_CREDS_LOC
 
         Object.freeze(this)
 
