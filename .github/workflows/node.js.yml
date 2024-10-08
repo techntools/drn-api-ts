@@ -25,6 +25,5 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: npm run build
-    - run: |
-        touch .env
-        echo "${{ secrets.DRN_SECRETS }}" > .env
+    - run: cp ~/.env .env
+    - run: pm2 restart drn-apis
