@@ -6,7 +6,7 @@ DELAY=3                                     # Delay in seconds before making the
 EXPECTED_STATUS=200                         # The expected HTTP status code
 CURL_OUTPUT="curl_output.txt"               # Temporary file to store curl output
 
-pm2 restart $PROCESS_NAME
+pm2 startOrReload ecosystem.config.js
 if [ $? -ne 0 ]; then
   echo "Failed to start process $PROCESS_NAME"
   exit 1

@@ -26,4 +26,4 @@ jobs:
     - run: npm i
     - run: npm run build
     - run: cp ~/.env .env
-    - run: pm2 restart drn-apis
+    - run: ./check-restart-status.sh
